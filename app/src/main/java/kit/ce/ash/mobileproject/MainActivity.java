@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -64,6 +66,27 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        // requestCode를 사용해서 어떠한 요청인지 구분한다.
+        switch (requestCode) {
+            case 0:
+                // resultCode를 이용하여서 데이터 입력 화면에서 어떠한 결과를 처리하여서 데이터를 넘겨주는지 확인한다
+                if (resultCode == RESULT_OK) {
+
+                }
+                adapter.notifyDataSetChanged();
+                break;
+            case 1:
+                if (resultCode == RESULT_OK) {
+
+                }
+                adapter.notifyDataSetChanged();
+                break;
+        }
+    }
+
 
     private class ViewHolder {
         public TextView location;
