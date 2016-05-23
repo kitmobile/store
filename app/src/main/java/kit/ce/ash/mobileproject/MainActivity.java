@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
                 if (mBound) {
                     double latitude = mService.getLatitude();
                     double longtitude = mService.getLongtitude();
-                    Toast.makeText(MainActivity.this, "위도 = " + latitude + "\n경도 = " + longtitude, Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, "위도 = " + change(latitude) + "\n경도 = " + change(longtitude), Toast.LENGTH_LONG).show();
                 }
                 else{
                     bind();
@@ -233,4 +233,32 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+
+    // double로 된 위,경도 값을 받아와서 도/분/초 String 값으로 변경
+    public String change(double val){
+        String lat = "";
+        int doe;
+        double bun;
+        double cho;
+
+        // val = 36.1455559, = 36도 8분 44.00초
+
+        doe = (int)val; // 36
+
+        lat = String.valueOf(doe) + "도 "; // 36도
+
+        bun = (val-doe) * 60; // 8.733354
+
+        lat = lat + String.valueOf((int)bun) + "분 "; // 36도 8분
+
+        cho = (bun-(int)bun) * 60; // 44.00124
+
+        NumberFormat nf = NumberFormat.getInstance();
+        nf.setMinimumFractionDigits(2);//소수점 아래 최소 자리수
+        nf.setMaximumFractionDigits(2);//소수점 아래 최대 자리수
+
+        lat = lat + nf.format(cho) + "초"; // 36도 8분 44.00초
+
+        return lat;
+    }
 }
