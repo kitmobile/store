@@ -25,7 +25,7 @@
             android:layout_weight="1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="프리셋설정"
+            android:text="지도 열기"
             android:id="@+id/setPreset" />
     </LinearLayout>
 
@@ -41,13 +41,13 @@
             android:layout_weight="1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="CHANGE"
+            android:text="등록/변경"
             android:id="@+id/changeData" />
         <Button
             android:layout_weight="1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="DELETE"
+            android:text="프리셋 삭제"
             android:id="@+id/delData" />
     </LinearLayout>
 
