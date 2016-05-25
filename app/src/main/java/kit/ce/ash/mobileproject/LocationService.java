@@ -22,7 +22,7 @@ import java.util.List;
 public class LocationService extends Service{
 
     double latitude;
-    double longtitude;
+    double longitude;
 
     private LocationManager locationManager;
     private String locationProvider;
@@ -53,7 +53,7 @@ public class LocationService extends Service{
     }
 
     public double getLongtitude(){
-        return longtitude;
+        return longitude;
     }
 
     public void removeRequest(){
@@ -82,7 +82,7 @@ public class LocationService extends Service{
         getLastLocation();
 
         try {
-            locationManager.requestLocationUpdates(locationProvider, 5000, 0, mLocationListener);
+            locationManager.requestLocationUpdates(locationProvider, 20000, 0, mLocationListener);
             Log.e("requestLocationUpdate", "Permission Allowed");
         }
         catch (SecurityException e) {
@@ -95,9 +95,9 @@ public class LocationService extends Service{
         Location myLocation = getLastKnownLocation();
 
         latitude = myLocation.getLatitude();
-        longtitude = myLocation.getLongitude();
+        longitude = myLocation.getLongitude();
 
-        Log.e("getData", "lat = " + latitude + "\nlng = " + longtitude);
+        Log.e("getData", "lat = " + latitude + "\nlng = " + longitude);
 
     }
 
@@ -124,6 +124,19 @@ public class LocationService extends Service{
         return bestLocation;
     }
 
+    //콜백 인터페이스 선언
+    public interface ICallback {
+        public void recvData(double latitude, double longitude); //액티비티에서 선언한 콜백 함수.
+    }
+
+    private ICallback mCallback;
+
+    //액티비티에서 콜백 함수를 등록하기 위함.
+    public void registerCallback(ICallback cb) {
+        mCallback = cb;
+    }
+
+
     @Override
     public IBinder onBind(Intent intent) {
         Toast.makeText(LocationService.this, "Bind Service", Toast.LENGTH_SHORT).show();
@@ -149,10 +162,12 @@ public class LocationService extends Service{
 
             // 위치정보 획득
             latitude = location.getLatitude();
-            longtitude = location.getLongitude();
+            longitude = location.getLongitude();
+
+            mCallback.recvData(latitude, longitude);
 
             Log.e("onLocationChanged", "bestProvider : " + locationProvider);
-            Log.e("getData", "lat = " + latitude + " lng = " + longtitude);
+            Log.e("getData", "lat = " + latitude + " lng = " + longitude);
         }
 
         @Override

@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -22,13 +23,10 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    LocationService mService; // bind 타입 서비스
+    public LocationService mService; // bind 타입 서비스
     public boolean mBound = false; // 서비스 연결 상태
 
     ListViewAdapter adapter;
-
-    Button testBtn;
-    Button test2Btn;
 
     // startActivityForResult 에서 다른 액티비티로 넘겨주는 requestCode 값
     int newData = 1;
@@ -67,14 +65,29 @@ public class MainActivity extends AppCompatActivity {
         view.setOnTouchListener(touchListener);
         view.setOnScrollListener(touchListener.makeScrollListener());
 
-        testBtn = (Button)findViewById(R.id.testBtn);
+        view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                inputData data = adapter.mListData.get(position);
+                Toast.makeText(MainActivity.this, "위도 = " + data.getLatitude() + "\n경도 = " + data.getLongitude(), Toast.LENGTH_LONG).show();
+            }
+        });
+
+        /* LocationService 테스트용 버튼 2개
+           처음 버튼은 서비스가 없을 시 bindService 호출하여서 서비스와 바인딩, 서비스와 연결되어 있다면 서비스에서 위경도 값을 받아와서 Toast로 출력
+           두번째 버튼은 unbindService 호출하여서 서비스 바인딩 해제
+         */
+
+        Button testBtn = (Button)findViewById(R.id.testBtn);
         testBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mBound) {
                     double latitude = mService.getLatitude();
-                    double longtitude = mService.getLongtitude();
-                    Toast.makeText(MainActivity.this, "위도 = " + change(latitude) + "\n경도 = " + change(longtitude), Toast.LENGTH_LONG).show();
+                    double longitude = mService.getLongtitude();
+                    Toast.makeText(MainActivity.this, "위도 = " + change(latitude) + "\n경도 = " + change(longitude), Toast.LENGTH_LONG).show();
+                    Log.d("위도", latitude + "   " + change(latitude));
+                    Log.d("경도", longitude + "   " + change(longitude));
                 }
                 else{
                     bind();
@@ -83,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        test2Btn = (Button)findViewById(R.id.test2Btn);
+        Button test2Btn = (Button)findViewById(R.id.test2Btn);
         test2Btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -123,7 +136,9 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case 1:
                 if (resultCode == RESULT_OK) {
-
+                    Double latitude = round(Double.parseDouble(intent.getStringExtra("latitude")));
+                    Double longitude = round(Double.parseDouble(intent.getStringExtra("longitude")));
+                    adapter.addItem(intent.getStringExtra("location"), latitude, longitude);
                 }
                 adapter.notifyDataSetChanged();
                 break;
@@ -180,13 +195,26 @@ public class MainActivity extends AppCompatActivity {
                 holder = (ViewHolder) convertView.getTag();
             }
 
+            inputData data = mListData.get(position);
+
+            holder.location.setText(data.getLocation());
+
+            Log.d("getLocation",data.getLocation());
+
             adapter.notifyDataSetChanged();
 
             return convertView;
         }
 
         // 새 항목 추가
-        public void addItem(String location) {
+        public void addItem(String location, double latitude, double longitude) {
+            inputData addInfo;
+            addInfo = new inputData(location, latitude, longitude);
+
+            mListData.add(addInfo);
+        }
+
+        public void addLocation(String location) {
             inputData addInfo;
             addInfo = new inputData(location);
 
@@ -217,12 +245,21 @@ public class MainActivity extends AppCompatActivity {
         mService.removeRequest();
     }
 
+    //서비스에서 아래의 콜백 함수를 호출하며, 콜백 함수에서는 액티비티에서 처리할 내용 입력
+    private LocationService.ICallback mCallback = new LocationService.ICallback() {
+        public void recvData(double latitude, double longitude) {
+            Toast.makeText(MainActivity.this, "recvData \n" + latitude + "\n" + longitude, Toast.LENGTH_SHORT).show();
+        }
+    };
+
+
     // ServiceConnection 객체 생성으로 bind타입 서비스와 액티비티간 연결
     private ServiceConnection mConn = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             LocationService.LocalBinder binder = (LocationService.LocalBinder) service;
             mService = binder.getService();
+            mService.registerCallback(mCallback); //콜백 등록
             mBound = true;
         }
 
@@ -247,11 +284,11 @@ public class MainActivity extends AppCompatActivity {
 
         lat = String.valueOf(doe) + "도 "; // 36도
 
-        bun = (val-doe) * 60; // 8.733354
+        bun = (val-doe) * 60; // 0.1455559 * 60 = 8.733354
 
         lat = lat + String.valueOf((int)bun) + "분 "; // 36도 8분
 
-        cho = (bun-(int)bun) * 60; // 44.00124
+        cho = (bun-(int)bun) * 60; // 0.733354 * 60 = 44.00124
 
         NumberFormat nf = NumberFormat.getInstance();
         nf.setMinimumFractionDigits(2);//소수점 아래 최소 자리수
@@ -260,5 +297,9 @@ public class MainActivity extends AppCompatActivity {
         lat = lat + nf.format(cho) + "초"; // 36도 8분 44.00초
 
         return lat;
+    }
+
+    public double round(double val){
+        return Math.round(val*1000)/1000.0;
     }
 }
