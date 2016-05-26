@@ -144,13 +144,14 @@ public class MainActivity extends AppCompatActivity {
 
         // 새 항목 추가
         public void addItem(String location) {
+            Toast.makeText(this.mContext,"1",Toast.LENGTH_SHORT).show();
             inputData addInfo;
             addInfo = new inputData(location);
-
-            mListData.add(addInfo);
+            addInfo.setWifi(true);
+            mListData.add        // 항목 삭제
+                    (addInfo);
         }
 
-        // 항목 삭제
         public void remove(int position) {
             mListData.remove(position);
             dataChange();
