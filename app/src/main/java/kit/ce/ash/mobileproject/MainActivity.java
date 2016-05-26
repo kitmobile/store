@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
                     adapter.remove(position); // 선택한 항목을 삭제
                 }
                 adapter.notifyDataSetChanged(); // 어댑터의 내용이 변경된걸 알려줌줌
-           }
+            }
         });
 
         // 생성한 터치리스너를 커스텀 리스트뷰에 등록
