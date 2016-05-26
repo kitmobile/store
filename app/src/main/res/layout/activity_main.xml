@@ -10,8 +10,7 @@
     <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/listView"
-        android:layout_above="@+id/newBtn" />
+        android:id="@+id/listView" />
 
     <Button
         android:layout_width="wrap_content"
@@ -20,6 +19,24 @@
         android:text="new"
         android:layout_alignParentBottom="true"
         android:layout_alignLeft="@+id/listView"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/testBtn"
+        android:text="위경도"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/test2Btn"
+        android:text="unbind"
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@+id/listView"
         />
 
 </RelativeLayout>

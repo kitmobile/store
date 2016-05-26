@@ -1,19 +1,26 @@
 package kit.ce.ash.mobileproject;
 
 
-import android.content.Context;
-import android.net.wifi.WifiManager;
-import android.widget.Toast;
-
 public class inputData {
     private String location;
-    private WifiManager mWifiManager;
-    Context context;
+    private boolean working;
+    private double latitude;
+    private double longitude;
+    private boolean wlan;
+    /*
+    private int sound;
+    private int brighness;
+    private boolean dataNetwork;
+    */
 
-    inputData(String location) {
+    inputData(String location){
         this.location = location;
-        this.mWifiManager = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
-        Toast.makeText(context,"2",Toast.LENGTH_SHORT).show();
+    }
+
+    inputData(String location, double latitude, double longitude){
+        this.location = location;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public void setLocation(String location){
@@ -24,11 +31,35 @@ public class inputData {
         return location;
     }
 
-    public void setWifi(boolean wifistate) {
-        Toast.makeText(this.context,"success",Toast.LENGTH_SHORT).show();
-        if(wifistate)
-            mWifiManager.setWifiEnabled(true);
-        else
-            mWifiManager.setWifiEnabled(false);
+    public void setWorking(boolean working){
+        this.working = working;
+    }
+
+    public boolean getWorking(){
+        return working;
+    }
+
+    public void setLatitude(double latitude){
+        this.latitude = latitude;
+    }
+
+    public double getLatitude(){
+        return latitude;
+    }
+
+    public void setLongitude(double longitude){
+        this.longitude = longitude;
+    }
+
+    public double getLongitude(){
+        return longitude;
+    }
+
+    public void setWlan(boolean val){
+        this.wlan = val;
+    }
+
+    public boolean getWlan(){
+        return wlan;
     }
 }
