@@ -1,11 +1,14 @@
 package kit.ce.ash.mobileproject;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
 import android.os.IBinder;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,15 +24,19 @@ import android.widget.Toast;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
     public LocationService mService; // bind 타입 서비스
     public boolean mBound = false; // 서비스 연결 상태
 
     ListViewAdapter adapter;
 
+
     // startActivityForResult 에서 다른 액티비티로 넘겨주는 requestCode 값
     int newData = 1;
+    int editData = 0;
+
+    String netName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
         ListView view = (ListView)findViewById(R.id.listView);
         adapter = new ListViewAdapter(this); // 어댑터 객채 생성
         view.setAdapter(adapter); // 커스텀 리스트뷰에 어댑터 연결
+
+
 
         /*
         리스트뷰를 스와이프 하여서 커스텀 리스트뷰의 항목을 삭제하는 코드
@@ -58,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
                     adapter.remove(position); // 선택한 항목을 삭제
                 }
                 adapter.notifyDataSetChanged(); // 어댑터의 내용이 변경된걸 알려줌줌
-           }
+            }
         });
 
         // 생성한 터치리스너를 커스텀 리스트뷰에 등록
@@ -125,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
     // 액티비티가 특정한 값을 받아올 때 자동 호출
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-        // requestCode를 사용해서 어떠한 요청인지 구분한다.
+        // requestCode를 사용해서 어떠한 요청인지 구분한다. 0:항목수정, 1:새항목
         switch (requestCode) {
             case 0:
                 // resultCode를 이용하여서 데이터 입력 화면에서 어떠한 결과를 처리하여서 데이터를 넘겨주는지 확인한다
@@ -214,13 +223,6 @@ public class MainActivity extends AppCompatActivity {
             mListData.add(addInfo);
         }
 
-        public void addLocation(String location) {
-            inputData addInfo;
-            addInfo = new inputData(location);
-
-            mListData.add(addInfo);
-        }
-
         // 항목 삭제
         public void remove(int position) {
             mListData.remove(position);
@@ -245,10 +247,28 @@ public class MainActivity extends AppCompatActivity {
         mService.removeRequest();
     }
 
-    //서비스에서 아래의 콜백 함수를 호출하며, 콜백 함수에서는 액티비티에서 처리할 내용 입력
+    // onLocationChanged 호출시 획득한 위치정보를 액티비티에서 인자값으로 전달받음
     private LocationService.ICallback mCallback = new LocationService.ICallback() {
         public void recvData(double latitude, double longitude) {
             Toast.makeText(MainActivity.this, "recvData \n" + latitude + "\n" + longitude, Toast.LENGTH_SHORT).show();
+
+            /* 현재 접속중인 네트워크 확인
+             WIFI 접속시 WIFI, 데이터 사용시 MOBILE 이라고 netName 값에 저장함
+             */
+            ConnectivityManager manager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo ni = manager.getActiveNetworkInfo();
+
+
+            netName = ni.getTypeName();
+            if (netName.equals("MOBILE")) {
+                Log.i("network", "Network - > " + netName);
+            }
+            else{
+                Log.i("network", "Network - > " + netName);
+            }
+
+
+            setWifi(false);
         }
     };
 
@@ -301,5 +321,32 @@ public class MainActivity extends AppCompatActivity {
 
     public double round(double val){
         return Math.round(val*1000)/1000.0;
+    }
+
+    public void setWifi(boolean val){
+        WifiManager wManager = (WifiManager)getSystemService(Context.WIFI_SERVICE);
+
+        if(!val){
+            if(!netName.equals("WIFI")) {
+                Toast.makeText(MainActivity.this, "ALREADY WIFI OFF.", Toast.LENGTH_SHORT).show();
+                Log.d("netName",netName + " 0");
+            }
+            else {
+                wManager.setWifiEnabled(false);
+                Toast.makeText(MainActivity.this, "NOW ㅗWIFI OFF.", Toast.LENGTH_SHORT).show();
+                Log.d("netName", netName + " 1");
+            }
+        }
+        else{
+            if(netName.equals("WIFI")) {
+                Toast.makeText(MainActivity.this, "ALREADY WIFI ON", Toast.LENGTH_SHORT).show();
+                Log.d("netName", netName + " 2");
+            }
+            else {
+                wManager.setWifiEnabled(true);
+                Toast.makeText(MainActivity.this, "NOW WIFI ON", Toast.LENGTH_SHORT).show();
+                Log.d("netName",netName + " 3");
+            }
+        }
     }
 }

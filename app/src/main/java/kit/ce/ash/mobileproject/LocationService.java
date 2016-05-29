@@ -82,7 +82,7 @@ public class LocationService extends Service{
         getLastLocation();
 
         try {
-            locationManager.requestLocationUpdates(locationProvider, 20000, 0, mLocationListener);
+            locationManager.requestLocationUpdates(locationProvider, 10000, 0, mLocationListener);
             Log.e("requestLocationUpdate", "Permission Allowed");
         }
         catch (SecurityException e) {
@@ -124,7 +124,7 @@ public class LocationService extends Service{
         return bestLocation;
     }
 
-    //콜백 인터페이스 선언
+    //서비스에서 액티비티로 데이터를 전달하기 위한 콜백 인터페이스 선언
     public interface ICallback {
         public void recvData(double latitude, double longitude); //액티비티에서 선언한 콜백 함수.
     }
@@ -164,6 +164,7 @@ public class LocationService extends Service{
             latitude = location.getLatitude();
             longitude = location.getLongitude();
 
+            // 획득한 위치정보를 액티비티로 전달한다.
             mCallback.recvData(latitude, longitude);
 
             Log.e("onLocationChanged", "bestProvider : " + locationProvider);

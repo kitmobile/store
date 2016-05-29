@@ -71,13 +71,22 @@
 
     </TableLayout>
 
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/checkListView"
+        android:layout_below="@+id/tablelayout">
+
+
+    </ListView>
+
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:id="@+id/layout"
         android:layout_marginTop="20dp"
-        android:layout_below="@+id/tablelayout">
+        android:layout_below="@+id/checkListView">
 
         <Button
             android:layout_weight="1"
