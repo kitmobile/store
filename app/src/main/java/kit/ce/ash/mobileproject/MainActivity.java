@@ -5,11 +5,13 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.os.IBinder;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -129,6 +131,7 @@ public class MainActivity extends Activity {
                 startActivityForResult(intent, newData);
             }
         });
+
     }
 
     // 액티비티가 특정한 값을 받아올 때 자동 호출
@@ -267,8 +270,8 @@ public class MainActivity extends Activity {
                 Log.i("network", "Network - > " + netName);
             }
 
-
             setWifi(false);
+            //setSound(true);
         }
     };
 
@@ -333,7 +336,7 @@ public class MainActivity extends Activity {
             }
             else {
                 wManager.setWifiEnabled(false);
-                Toast.makeText(MainActivity.this, "NOW ㅗWIFI OFF.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "NOW WIFI OFF.", Toast.LENGTH_SHORT).show();
                 Log.d("netName", netName + " 1");
             }
         }
@@ -347,6 +350,24 @@ public class MainActivity extends Activity {
                 Toast.makeText(MainActivity.this, "NOW WIFI ON", Toast.LENGTH_SHORT).show();
                 Log.d("netName",netName + " 3");
             }
+        }
+    }
+
+    public void setSound(int val)
+    {
+        AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+        switch (val) {
+            case 0:
+                audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL); //소리
+                break;
+            case 1:
+                audioManager.setRingerMode(AudioManager.RINGER_MODE_VIBRATE); //진동
+                break;
+            case 2:
+                audioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT); //무음
+                break;
+            case 3:
+                break;
         }
     }
 }

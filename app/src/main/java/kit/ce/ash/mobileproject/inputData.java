@@ -9,6 +9,9 @@ public class inputData {
     private double longitude;
     private boolean wlan;
     private boolean sound;
+    private boolean vibrate;
+    private boolean silent;
+    private boolean no_use;
     private boolean dataNetwork;
 
 
@@ -68,6 +71,30 @@ public class inputData {
 
     public boolean getWlan(){
         return wlan;
+    }
+
+    public void setVibrate(boolean val){
+        this.vibrate = val;
+    }
+
+    public boolean getVibrate(){
+        return vibrate;
+    }
+
+    public void setSilent(boolean val){
+        this.silent = val;
+    }
+
+    public boolean getSilent(){
+        return silent;
+    }
+
+    public void setNouse(boolean val){
+        this.no_use = val;
+    }
+
+    public boolean getNouse(){
+        return no_use;
     }
 
     public void setSound(boolean val){

@@ -14,8 +14,11 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import java.util.ArrayList;
 
@@ -25,7 +28,7 @@ public class InputDataActivity extends Activity{
     EditText location;
     EditText latitude;
     EditText longitude;
-
+    RadioGroup rg;
     ListView settingListView;
 
     ListViewAdapter adapter;
@@ -35,24 +38,23 @@ public class InputDataActivity extends Activity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_data);
 
-        location = (EditText)findViewById(R.id.location);
-        latitude = (EditText)findViewById(R.id.latitude);
-        longitude = (EditText)findViewById(R.id.longitude);
+        location = (EditText) findViewById(R.id.location);
+        latitude = (EditText) findViewById(R.id.latitude);
+        longitude = (EditText) findViewById(R.id.longitude);
 
         latitude.setText("36.146");
         longitude.setText("128.393");
 
-        settingListView = (ListView)findViewById(R.id.checkListView);
+        settingListView = (ListView) findViewById(R.id.checkListView);
         settingListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         adapter = new ListViewAdapter(this); // 어댑터 객채 생성
         settingListView.setAdapter(adapter); // 커스텀 리스트뷰에 어댑터 연결
 
 
         adapter.addItem("와이파이");
-        adapter.addItem("소리");
         adapter.addItem("데이터네트워크");
 
-        Button changeData = (Button)findViewById(R.id.changeData);
+        Button changeData = (Button) findViewById(R.id.changeData);
         changeData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -61,9 +63,15 @@ public class InputDataActivity extends Activity{
                 intent.putExtra("latitude", latitude.getText().toString());
                 intent.putExtra("longitude", longitude.getText().toString());
                 setResult(RESULT_OK, intent);
+
+                rg = (RadioGroup) findViewById(R.id.SoundGroup);
+                RadioButton rd = (RadioButton) findViewById(rg.getCheckedRadioButtonId());
+                setPreset(rd.getText().toString(), 0, true);    //position 넣고
+
                 finish();
-            }
+           }
         });
+
     }
 
     private class ViewHolder {
@@ -136,8 +144,6 @@ public class InputDataActivity extends Activity{
                     }
                 }
             });
-
-
             adapter.notifyDataSetChanged();
 
             return convertView;
@@ -172,6 +178,18 @@ public class InputDataActivity extends Activity{
             case "소리" :
                 adapter.mListData.get(position).setSound(value);
                 Toast.makeText(InputDataActivity.this, "getSound : " + adapter.mListData.get(position).getSound(), Toast.LENGTH_SHORT).show();
+                break;
+            case "진동" :
+                adapter.mListData.get(position).setVibrate(value);
+                Toast.makeText(InputDataActivity.this, "getVibrate : " + adapter.mListData.get(position).getVibrate(), Toast.LENGTH_SHORT).show();
+                break;
+            case "무음" :
+                adapter.mListData.get(position).setSilent(value);
+                Toast.makeText(InputDataActivity.this, "getSilent : " + adapter.mListData.get(position).getSilent(), Toast.LENGTH_SHORT).show();
+                break;
+            case "사용 안함" :
+                adapter.mListData.get(position).setNouse(value);
+                Toast.makeText(InputDataActivity.this, "No use : " + adapter.mListData.get(position).getNouse(), Toast.LENGTH_SHORT).show();
                 break;
             case "데이터네트워크" :
                 adapter.mListData.get(position).setDataNetwork(value);
