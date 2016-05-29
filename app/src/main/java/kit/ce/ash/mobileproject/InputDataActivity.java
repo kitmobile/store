@@ -84,7 +84,6 @@ public class InputDataActivity extends Activity{
         private Context mContext = getApplicationContext();
         private ArrayList<inputData> mListData = new ArrayList<>();
         RadioGroup soundGroup;
-        RadioButton mbutton[] = null;
 
         public ListViewAdapter(Context mContext) {
             super();
@@ -121,16 +120,6 @@ public class InputDataActivity extends Activity{
                 holder.setting = (TextView) convertView.findViewById(R.id.location);
                 holder.checkBox = (CheckBox) convertView.findViewById(R.id.checkBox);
                 soundGroup = (RadioGroup)findViewById(R.id.SoundGroup);
-                if(soundGroup == null)
-                    Log.e("soundGrop", "null");
-
-                mbutton = new RadioButton[4];
-
-                for(int i=0; i<4; i++){
-                    mbutton[i] = new RadioButton(mContext);
-
-                    mbutton[i].setId(i);
-                }
 
                 convertView.setTag(holder);
             }
@@ -158,16 +147,13 @@ public class InputDataActivity extends Activity{
                 }
             });
 
-            /*
-            라디오그룹의 체인지리스너 등록,
-             */
 
+           // 라디오그룹의 체인지리스너 등록, 라디오그룹에 속한 라디오버튼의 id와 사용자가 선택한 라디오버튼의 id가 같을 경우에 setPreset 메소드 호출
             soundGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(RadioGroup group, int checkedId) {
                     for(int i=0; i<4; i++) {
                         RadioButton btn = (RadioButton) group.getChildAt(i);
-                        int t = group.getId();
 
                         if(btn.getId() == checkedId){
                             setPreset(btn.getText().toString(),position, true);
