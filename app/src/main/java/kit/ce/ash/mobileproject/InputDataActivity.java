@@ -81,8 +81,10 @@ public class InputDataActivity extends Activity{
 
     // 커스텀 리스트 뷰 어댑터
     private class ListViewAdapter extends BaseAdapter {
-        private Context mContext = null;
+        private Context mContext = getApplicationContext();
         private ArrayList<inputData> mListData = new ArrayList<>();
+        RadioGroup soundGroup;
+        RadioButton mbutton[] = null;
 
         public ListViewAdapter(Context mContext) {
             super();
@@ -118,6 +120,17 @@ public class InputDataActivity extends Activity{
                 // 뷰홀더를 통해 커스텀 리스트뷰 내부의 객체 생성
                 holder.setting = (TextView) convertView.findViewById(R.id.location);
                 holder.checkBox = (CheckBox) convertView.findViewById(R.id.checkBox);
+                soundGroup = (RadioGroup)findViewById(R.id.SoundGroup);
+                if(soundGroup == null)
+                    Log.e("soundGrop", "null");
+
+                mbutton = new RadioButton[4];
+
+                for(int i=0; i<4; i++){
+                    mbutton[i] = new RadioButton(mContext);
+
+                    mbutton[i].setId(i);
+                }
 
                 convertView.setTag(holder);
             }
@@ -141,6 +154,25 @@ public class InputDataActivity extends Activity{
                     else{
                         Log.d("isChecked","nothing");
                         setPreset(holder.setting.getText().toString(), position, false);
+                    }
+                }
+            });
+
+            /*
+            라디오그룹의 체인지리스너 등록,
+             */
+
+            soundGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(RadioGroup group, int checkedId) {
+                    for(int i=0; i<4; i++) {
+                        RadioButton btn = (RadioButton) group.getChildAt(i);
+                        int t = group.getId();
+
+                        if(btn.getId() == checkedId){
+                            setPreset(btn.getText().toString(),position, true);
+                            Log.i(btn.getText().toString(), "checked");
+                        }
                     }
                 }
             });
@@ -174,27 +206,49 @@ public class InputDataActivity extends Activity{
             case "와이파이" :
                 adapter.mListData.get(position).setWlan(value);
                 Toast.makeText(InputDataActivity.this, "getWlan : " + adapter.mListData.get(position).getWlan(), Toast.LENGTH_SHORT).show();
+                Log.i("getWlan", String.valueOf(adapter.mListData.get(position).getWlan()));
                 break;
             case "소리" :
                 adapter.mListData.get(position).setSound(value);
-                Toast.makeText(InputDataActivity.this, "getSound : " + adapter.mListData.get(position).getSound(), Toast.LENGTH_SHORT).show();
+                adapter.mListData.get(position).setVibrate(!value);
+                adapter.mListData.get(position).setSilent(!value);
+                adapter.mListData.get(position).setNouse(!value);
                 break;
             case "진동" :
+                adapter.mListData.get(position).setSound(!value);
                 adapter.mListData.get(position).setVibrate(value);
-                Toast.makeText(InputDataActivity.this, "getVibrate : " + adapter.mListData.get(position).getVibrate(), Toast.LENGTH_SHORT).show();
+                adapter.mListData.get(position).setSilent(!value);
+                adapter.mListData.get(position).setNouse(!value);
                 break;
             case "무음" :
+                adapter.mListData.get(position).setSound(!value);
+                adapter.mListData.get(position).setVibrate(!value);
                 adapter.mListData.get(position).setSilent(value);
-                Toast.makeText(InputDataActivity.this, "getSilent : " + adapter.mListData.get(position).getSilent(), Toast.LENGTH_SHORT).show();
+                adapter.mListData.get(position).setNouse(!value);
                 break;
             case "사용 안함" :
+                adapter.mListData.get(position).setSound(!value);
+                adapter.mListData.get(position).setVibrate(!value);
+                adapter.mListData.get(position).setSilent(!value);
                 adapter.mListData.get(position).setNouse(value);
-                Toast.makeText(InputDataActivity.this, "No use : " + adapter.mListData.get(position).getNouse(), Toast.LENGTH_SHORT).show();
                 break;
             case "데이터네트워크" :
                 adapter.mListData.get(position).setDataNetwork(value);
                 Toast.makeText(InputDataActivity.this, "getDataNetwork : " + adapter.mListData.get(position).getDataNetwork(), Toast.LENGTH_SHORT).show();
+                Log.i("getDataNetwork", String.valueOf(adapter.mListData.get(position).getDataNetwork()));
                 break;
         }
+
+        Toast.makeText(InputDataActivity.this,
+                "getSound : " + adapter.mListData.get(position).getSound()
+                + "\ngetVibrate : " + adapter.mListData.get(position).getVibrate()
+                + "\ngetSilent : " + adapter.mListData.get(position).getSilent()
+                + "\nNo use : " + adapter.mListData.get(position).getNouse()
+                , Toast.LENGTH_SHORT).show();
+
+        Log.i("getSound", String.valueOf(adapter.mListData.get(position).getSound()));
+        Log.i("getVibrate", String.valueOf(adapter.mListData.get(position).getVibrate()));
+        Log.i("getSilent", String.valueOf(adapter.mListData.get(position).getSilent()));
+        Log.i("getNouse", String.valueOf(adapter.mListData.get(position).getNouse()));
     }
 }
