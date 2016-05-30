@@ -64,6 +64,14 @@ public class InputDataActivity extends Activity{
                 finish();
             }
         });
+        Button openMap = (Button)findViewById(R.id.openMap);
+        openMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(InputDataActivity.this, GMapActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private class ViewHolder {
