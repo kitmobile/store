@@ -253,7 +253,7 @@ public class MainActivity extends Activity {
     // onLocationChanged 호출시 획득한 위치정보를 액티비티에서 인자값으로 전달받음
     private LocationService.ICallback mCallback = new LocationService.ICallback() {
         public void recvData(double latitude, double longitude) {
-            Toast.makeText(MainActivity.this, "recvData \n" + latitude + "\n" + longitude, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(MainActivity.this, "recvData \n" + latitude + "\n" + longitude, Toast.LENGTH_SHORT).show();
 
             /* 현재 접속중인 네트워크 확인
              WIFI 접속시 WIFI, 데이터 사용시 MOBILE 이라고 netName 값에 저장함
@@ -271,7 +271,7 @@ public class MainActivity extends Activity {
             }
 
             setWifi(false);
-            //setSound(true);
+            setSound(2);
         }
     };
 
@@ -353,21 +353,24 @@ public class MainActivity extends Activity {
         }
     }
 
-    public void setSound(int val)
-    {
+    public void setSound(int val) {
         AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
         switch (val) {
             case 0:
                 audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL); //소리
+                Toast.makeText(MainActivity.this, "NOW RINGTONE", Toast.LENGTH_SHORT).show();
                 break;
             case 1:
                 audioManager.setRingerMode(AudioManager.RINGER_MODE_VIBRATE); //진동
+                Toast.makeText(MainActivity.this, "NOW VIBRATE", Toast.LENGTH_SHORT).show();
                 break;
             case 2:
                 audioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT); //무음
+                Toast.makeText(MainActivity.this, "NOW SILENT", Toast.LENGTH_SHORT).show();
                 break;
             case 3:
                 break;
         }
     }
 }
+

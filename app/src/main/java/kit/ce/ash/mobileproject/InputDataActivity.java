@@ -18,7 +18,6 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import java.util.ArrayList;
 
@@ -28,7 +27,10 @@ public class InputDataActivity extends Activity{
     EditText location;
     EditText latitude;
     EditText longitude;
-    RadioGroup rg;
+
+    double getLatitude;
+    double getLongitude;
+
     ListView settingListView;
 
     ListViewAdapter adapter;
@@ -38,23 +40,19 @@ public class InputDataActivity extends Activity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_data);
 
-        location = (EditText) findViewById(R.id.location);
-        latitude = (EditText) findViewById(R.id.latitude);
-        longitude = (EditText) findViewById(R.id.longitude);
+        location = (EditText)findViewById(R.id.location);
+        latitude = (EditText)findViewById(R.id.latitude);
+        longitude = (EditText)findViewById(R.id.longitude);
 
-        latitude.setText("36.146");
-        longitude.setText("128.393");
-
-        settingListView = (ListView) findViewById(R.id.checkListView);
+        settingListView = (ListView)findViewById(R.id.checkListView);
         settingListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         adapter = new ListViewAdapter(this); // 어댑터 객채 생성
         settingListView.setAdapter(adapter); // 커스텀 리스트뷰에 어댑터 연결
 
-
         adapter.addItem("와이파이");
         adapter.addItem("데이터네트워크");
 
-        Button changeData = (Button) findViewById(R.id.changeData);
+        Button changeData = (Button)findViewById(R.id.changeData);
         changeData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -63,15 +61,54 @@ public class InputDataActivity extends Activity{
                 intent.putExtra("latitude", latitude.getText().toString());
                 intent.putExtra("longitude", longitude.getText().toString());
                 setResult(RESULT_OK, intent);
-
-                rg = (RadioGroup) findViewById(R.id.SoundGroup);
-                RadioButton rd = (RadioButton) findViewById(rg.getCheckedRadioButtonId());
-                setPreset(rd.getText().toString(), 0, true);    //position 넣고
-
                 finish();
-           }
+            }
         });
 
+        Button openMap = (Button)findViewById(R.id.openMap);
+        openMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(InputDataActivity.this, GMapActivity.class);
+                startActivityForResult(intent, 1);
+            }
+        });
+    }
+
+    // 액티비티가 특정한 값을 받아올 때 자동 호출
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        // requestCode를 사용해서 어떠한 요청인지 구분한다. 0:항목수정, 1:새항목
+        switch (requestCode) {
+            case 0:
+                // resultCode를 이용하여서 데이터 입력 화면에서 어떠한 결과를 처리하여서 데이터를 넘겨주는지 확인한다
+                if (resultCode == RESULT_OK) {
+
+                }
+                adapter.notifyDataSetChanged();
+                break;
+            case 1:
+                if (resultCode == RESULT_OK) {
+                    try {
+                        getLatitude = round(Double.parseDouble(intent.getStringExtra("latitude")));
+                        getLongitude = round(Double.parseDouble(intent.getStringExtra("longitude")));
+
+                        latitude.setText(String.valueOf(getLatitude));
+                        longitude.setText(String.valueOf(getLongitude));
+
+
+                        Log.i("getLatitude", String.valueOf(getLatitude));
+                        Log.i("getLongitude", String.valueOf(getLongitude));
+                    }
+                    catch (NullPointerException e){
+                        Log.e("nullPoint","");
+                        e.printStackTrace();
+                    }
+
+                }
+                adapter.notifyDataSetChanged();
+                break;
+        }
     }
 
     private class ViewHolder {
@@ -84,6 +121,7 @@ public class InputDataActivity extends Activity{
         private Context mContext = getApplicationContext();
         private ArrayList<inputData> mListData = new ArrayList<>();
         RadioGroup soundGroup;
+        RadioButton mbutton[] = null;
 
         public ListViewAdapter(Context mContext) {
             super();
@@ -121,6 +159,14 @@ public class InputDataActivity extends Activity{
                 holder.checkBox = (CheckBox) convertView.findViewById(R.id.checkBox);
                 soundGroup = (RadioGroup)findViewById(R.id.SoundGroup);
 
+                mbutton = new RadioButton[4];
+
+                for(int i=0; i<4; i++){
+                    mbutton[i] = new RadioButton(mContext);
+
+                    mbutton[i].setId(i);
+                }
+
                 convertView.setTag(holder);
             }
             else {
@@ -133,6 +179,7 @@ public class InputDataActivity extends Activity{
 
             holder.checkBox.setChecked(((ListView)parent).isItemChecked(position));
 
+            // 체크박스가 체크되었는지 아닌지 확인하는 리스너
             holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -147,13 +194,13 @@ public class InputDataActivity extends Activity{
                 }
             });
 
-
-           // 라디오그룹의 체인지리스너 등록, 라디오그룹에 속한 라디오버튼의 id와 사용자가 선택한 라디오버튼의 id가 같을 경우에 setPreset 메소드 호출
+            // 라디오그룹 체크되었는지 확인하는 리스너
             soundGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(RadioGroup group, int checkedId) {
                     for(int i=0; i<4; i++) {
                         RadioButton btn = (RadioButton) group.getChildAt(i);
+                        int t = group.getId();
 
                         if(btn.getId() == checkedId){
                             setPreset(btn.getText().toString(),position, true);
@@ -162,6 +209,8 @@ public class InputDataActivity extends Activity{
                     }
                 }
             });
+
+
             adapter.notifyDataSetChanged();
 
             return convertView;
@@ -227,14 +276,19 @@ public class InputDataActivity extends Activity{
 
         Toast.makeText(InputDataActivity.this,
                 "getSound : " + adapter.mListData.get(position).getSound()
-                + "\ngetVibrate : " + adapter.mListData.get(position).getVibrate()
-                + "\ngetSilent : " + adapter.mListData.get(position).getSilent()
-                + "\nNo use : " + adapter.mListData.get(position).getNouse()
+                        + "\ngetVibrate : " + adapter.mListData.get(position).getVibrate()
+                        + "\ngetSilent : " + adapter.mListData.get(position).getSilent()
+                        + "\nNo use : " + adapter.mListData.get(position).getNouse()
                 , Toast.LENGTH_SHORT).show();
 
         Log.i("getSound", String.valueOf(adapter.mListData.get(position).getSound()));
         Log.i("getVibrate", String.valueOf(adapter.mListData.get(position).getVibrate()));
         Log.i("getSilent", String.valueOf(adapter.mListData.get(position).getSilent()));
         Log.i("getNouse", String.valueOf(adapter.mListData.get(position).getNouse()));
+    }
+
+
+    public double round(double val){
+        return Math.round(val*1000)/1000.0;
     }
 }
