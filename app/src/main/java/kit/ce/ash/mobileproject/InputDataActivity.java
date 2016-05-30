@@ -26,6 +26,9 @@ public class InputDataActivity extends Activity{
     EditText latitude;
     EditText longitude;
 
+    double getLatitude;
+    double getLongitude;
+
     ListView settingListView;
 
     ListViewAdapter adapter;
@@ -38,9 +41,6 @@ public class InputDataActivity extends Activity{
         location = (EditText)findViewById(R.id.location);
         latitude = (EditText)findViewById(R.id.latitude);
         longitude = (EditText)findViewById(R.id.longitude);
-
-        latitude.setText("36.146");
-        longitude.setText("128.393");
 
         settingListView = (ListView)findViewById(R.id.checkListView);
         settingListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
@@ -64,14 +64,51 @@ public class InputDataActivity extends Activity{
                 finish();
             }
         });
+
         Button openMap = (Button)findViewById(R.id.openMap);
         openMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(InputDataActivity.this, GMapActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, 1);
             }
         });
+    }
+
+    // 액티비티가 특정한 값을 받아올 때 자동 호출
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        // requestCode를 사용해서 어떠한 요청인지 구분한다. 0:항목수정, 1:새항목
+        switch (requestCode) {
+            case 0:
+                // resultCode를 이용하여서 데이터 입력 화면에서 어떠한 결과를 처리하여서 데이터를 넘겨주는지 확인한다
+                if (resultCode == RESULT_OK) {
+
+                }
+                adapter.notifyDataSetChanged();
+                break;
+            case 1:
+                if (resultCode == RESULT_OK) {
+                    try {
+                        getLatitude = round(Double.parseDouble(intent.getStringExtra("latitude")));
+                        getLongitude = round(Double.parseDouble(intent.getStringExtra("longitude")));
+
+                        latitude.setText(String.valueOf(getLatitude));
+                        longitude.setText(String.valueOf(getLongitude));
+
+
+                        Log.i("getLatitude", String.valueOf(getLatitude));
+                        Log.i("getLongitude", String.valueOf(getLongitude));
+                    }
+                    catch (NullPointerException e){
+                        Log.e("nullPoint","");
+                        e.printStackTrace();
+                    }
+
+                }
+                adapter.notifyDataSetChanged();
+                break;
+        }
     }
 
     private class ViewHolder {
@@ -186,5 +223,9 @@ public class InputDataActivity extends Activity{
                 Toast.makeText(InputDataActivity.this, "getDataNetwork : " + adapter.mListData.get(position).getDataNetwork(), Toast.LENGTH_SHORT).show();
                 break;
         }
+    }
+
+    public double round(double val){
+        return Math.round(val*1000)/1000.0;
     }
 }
