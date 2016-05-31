@@ -11,7 +11,6 @@ import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.os.IBinder;
 import android.os.Bundle;
-import android.os.Vibrator;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +29,7 @@ public class MainActivity extends Activity {
 
     public LocationService mService; // bind 타입 서비스
     public boolean mBound = false; // 서비스 연결 상태
+    Intent mIntent;
 
     ListViewAdapter adapter;
 
@@ -49,6 +49,7 @@ public class MainActivity extends Activity {
         adapter = new ListViewAdapter(this); // 어댑터 객채 생성
         view.setAdapter(adapter); // 커스텀 리스트뷰에 어댑터 연결
 
+        mIntent = new Intent(MainActivity.this, LocationService.class);
 
 
         /*
@@ -101,7 +102,9 @@ public class MainActivity extends Activity {
                     Log.d("경도", longitude + "   " + change(longitude));
                 }
                 else{
-                    bind();
+                    if(startService(mIntent) != null )
+                        bind();
+
                     Toast.makeText(MainActivity.this, "서비스 바인딩", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -238,9 +241,15 @@ public class MainActivity extends Activity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbind(mConn);
+    }
+
     // bind 할때 사용
     public void bind(){
-        bindService(new Intent(this, LocationService.class), mConn, Context.BIND_AUTO_CREATE);
+        bindService(mIntent, mConn, Context.BIND_AUTO_CREATE);
     }
 
     // 서비스 bind 해제
@@ -254,21 +263,6 @@ public class MainActivity extends Activity {
     private LocationService.ICallback mCallback = new LocationService.ICallback() {
         public void recvData(double latitude, double longitude) {
             //Toast.makeText(MainActivity.this, "recvData \n" + latitude + "\n" + longitude, Toast.LENGTH_SHORT).show();
-
-            /* 현재 접속중인 네트워크 확인
-             WIFI 접속시 WIFI, 데이터 사용시 MOBILE 이라고 netName 값에 저장함
-             */
-            ConnectivityManager manager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo ni = manager.getActiveNetworkInfo();
-
-
-            netName = ni.getTypeName();
-            if (netName.equals("MOBILE")) {
-                Log.i("network", "Network - > " + netName);
-            }
-            else{
-                Log.i("network", "Network - > " + netName);
-            }
 
             setWifi(false);
             setSound(2);
@@ -327,6 +321,21 @@ public class MainActivity extends Activity {
     }
 
     public void setWifi(boolean val){
+
+         /* 현재 접속중인 네트워크 확인
+         WIFI 접속시 WIFI, 데이터 사용시 MOBILE 이라고 netName 값에 저장함
+         */
+        ConnectivityManager manager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo ni = manager.getActiveNetworkInfo();
+
+
+        netName = ni.getTypeName();
+        if (netName.equals("MOBILE")) {
+            Log.i("network", "Network - > " + netName);
+        }
+        else{
+            Log.i("network", "Network - > " + netName);
+        }
         WifiManager wManager = (WifiManager)getSystemService(Context.WIFI_SERVICE);
 
         if(!val){

@@ -90,6 +90,12 @@ public class LocationService extends Service{
         }
     }
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        super.onStartCommand(intent, flags, startId);
+        return START_STICKY;
+    }
+
     // 마지막 위치를 받아와 출력하는 메소드
     public void getLastLocation(){
         Location myLocation = getLastKnownLocation();
