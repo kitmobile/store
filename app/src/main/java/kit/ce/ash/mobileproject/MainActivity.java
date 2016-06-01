@@ -22,7 +22,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import android.nfc.NfcAdapter;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 
@@ -390,6 +390,28 @@ public class MainActivity extends Activity {
                 Toast.makeText(MainActivity.this, "NOW BLUETOOTH ON", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    // inputdata에 추가 아직 안함
+    public void setNFC(boolean val)
+    {
+        NfcAdapter mNfcAdapter= NfcAdapter.getDefaultAdapter(getApplicationContext());
+
+        if (mNfcAdapter == null) {
+            // NFC is not supported
+            Toast.makeText(MainActivity.this, "NFC Cannot Used.", Toast.LENGTH_SHORT).show();
+            return ;
+        }
+
+        if(val)
+                startActivity(new Intent(android.provider.Settings.ACTION_NFC_SETTINGS));
+    }
+
+    // inputdata에 추가 아직 안함
+    public void setDataNet(boolean val)
+    {
+        if(val)
+            startActivity(new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS));
     }
 }
 
