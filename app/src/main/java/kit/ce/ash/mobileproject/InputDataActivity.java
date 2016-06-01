@@ -50,7 +50,7 @@ public class InputDataActivity extends Activity{
         settingListView.setAdapter(adapter); // 커스텀 리스트뷰에 어댑터 연결
 
         adapter.addItem("와이파이");
-        adapter.addItem("데이터네트워크");
+        adapter.addItem("블루투스");
 
         Button changeData = (Button)findViewById(R.id.changeData);
         changeData.setOnClickListener(new View.OnClickListener() {
@@ -267,10 +267,10 @@ public class InputDataActivity extends Activity{
                 adapter.mListData.get(position).setSilent(!value);
                 adapter.mListData.get(position).setNouse(value);
                 break;
-            case "데이터네트워크" :
-                adapter.mListData.get(position).setDataNetwork(value);
-                Toast.makeText(InputDataActivity.this, "getDataNetwork : " + adapter.mListData.get(position).getDataNetwork(), Toast.LENGTH_SHORT).show();
-                Log.i("getDataNetwork", String.valueOf(adapter.mListData.get(position).getDataNetwork()));
+            case "블루투스" :
+                adapter.mListData.get(position).setBluetooth(value);
+                Toast.makeText(InputDataActivity.this, "getBluetooth : " + adapter.mListData.get(position).getBluetooth(), Toast.LENGTH_SHORT).show();
+                Log.i("getBluetooth", String.valueOf(adapter.mListData.get(position).getBluetooth()));
                 break;
         }
 

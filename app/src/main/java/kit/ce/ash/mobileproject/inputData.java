@@ -12,7 +12,7 @@ public class inputData {
     private boolean vibrate;
     private boolean silent;
     private boolean no_use;
-    private boolean dataNetwork;
+    private boolean bluetooth;
 
 
     inputData(String setting){
@@ -105,11 +105,11 @@ public class inputData {
         return sound;
     }
 
-    public void setDataNetwork(boolean val){
-        this.dataNetwork = val;
+    public void setBluetooth(boolean val){
+        this.bluetooth = val;
     }
 
-    public boolean getDataNetwork(){
-        return dataNetwork;
+    public boolean getBluetooth(){
+        return bluetooth;
     }
 }

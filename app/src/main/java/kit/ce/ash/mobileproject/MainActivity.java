@@ -1,6 +1,7 @@
 package kit.ce.ash.mobileproject;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -11,7 +12,6 @@ import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.os.IBinder;
 import android.os.Bundle;
-import android.os.Vibrator;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -270,6 +270,7 @@ public class MainActivity extends Activity {
                 Log.i("network", "Network - > " + netName);
             }
 
+            setBluetooth(true);
             setWifi(false);
             setSound(2);
         }
@@ -332,23 +333,19 @@ public class MainActivity extends Activity {
         if(!val){
             if(!netName.equals("WIFI")) {
                 Toast.makeText(MainActivity.this, "ALREADY WIFI OFF.", Toast.LENGTH_SHORT).show();
-                Log.d("netName",netName + " 0");
             }
             else {
                 wManager.setWifiEnabled(false);
                 Toast.makeText(MainActivity.this, "NOW WIFI OFF.", Toast.LENGTH_SHORT).show();
-                Log.d("netName", netName + " 1");
             }
         }
         else{
             if(netName.equals("WIFI")) {
                 Toast.makeText(MainActivity.this, "ALREADY WIFI ON", Toast.LENGTH_SHORT).show();
-                Log.d("netName", netName + " 2");
             }
             else {
                 wManager.setWifiEnabled(true);
                 Toast.makeText(MainActivity.this, "NOW WIFI ON", Toast.LENGTH_SHORT).show();
-                Log.d("netName",netName + " 3");
             }
         }
     }
@@ -370,6 +367,28 @@ public class MainActivity extends Activity {
                 break;
             case 3:
                 break;
+        }
+    }
+
+    public void setBluetooth(boolean val)
+    {
+        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+
+        if(!val){
+            if(!adapter.isEnabled())
+                Toast.makeText(MainActivity.this, "ALREADY BLUETOOTH OFF.", Toast.LENGTH_SHORT).show();
+            else {
+                adapter.disable();
+                Toast.makeText(MainActivity.this, "NOW BLUETOOTH OFF.", Toast.LENGTH_SHORT).show();
+            }
+        }
+        else{
+            if(adapter.isEnabled())
+                Toast.makeText(MainActivity.this, "ALREADY BLUETOOTH ON", Toast.LENGTH_SHORT).show();
+            else {
+                adapter.enable();
+                Toast.makeText(MainActivity.this, "NOW BLUETOOTH ON", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }
