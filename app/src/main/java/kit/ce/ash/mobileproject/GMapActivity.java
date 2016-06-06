@@ -18,14 +18,27 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class GMapActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    private Button mapBtn;
     double lat;
     double lon;
+
+    Intent getIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gmap);
+
+        getIntent = getIntent();
+
+        Log.w("edit", getIntent.getStringExtra("edit"));
+        if(getIntent.getStringExtra("edit").equals("edit")){
+            lat = Double.parseDouble(getIntent.getStringExtra("latitude"));
+            lon = Double.parseDouble(getIntent.getStringExtra("longitude"));
+        }
+        else{
+            lat = 36.146;
+            lon = 128.392;
+        }
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -37,10 +50,12 @@ public class GMapActivity extends FragmentActivity implements OnMapReadyCallback
 
         //LatLng seoul = new LatLng(37.567, 126.978);
 
-        lat = 36.146;
-        lon = 128.392;
+
         LatLng kumoh = new LatLng(lat, lon);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(kumoh, 13));
+
+        Log.i("lat2",String.valueOf(lat));
+        Log.i("lon2",String.valueOf(lon));
 
         // 지도의 한 지점을 선택할 경우 호출되는 맵 클릭 리스너 생성
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
@@ -65,7 +80,7 @@ public class GMapActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
         // 선택 버튼 객체 생성하고 리스너 등록
-        mapBtn = (Button)findViewById(R.id.mapBtn);
+        Button mapBtn = (Button) findViewById(R.id.mapBtn);
         mapBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

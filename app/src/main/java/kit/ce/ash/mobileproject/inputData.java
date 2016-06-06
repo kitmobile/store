@@ -27,10 +27,16 @@ public class inputData {
         this.setting = setting;
     }
 
-    inputData(String location, double latitude, double longitude){
+    inputData(String location, double latitude, double longitude, boolean wlan, boolean sound, boolean vibrate, boolean silent, boolean no_use, boolean dataNetwork){
         this.location = location;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.wlan = wlan;
+        this.sound = sound;
+        this.vibrate = vibrate;
+        this.silent = silent;
+        this.no_use = no_use;
+        this.dataNetwork = dataNetwork;
     }
 
     public void setLocation(String location){
