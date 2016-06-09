@@ -1,6 +1,7 @@
 package kit.ce.ash.mobileproject;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -21,7 +22,10 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.nfc.NfcAdapter;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 
@@ -29,7 +33,6 @@ public class MainActivity extends Activity {
 
     public LocationService mService; // bind 타입 서비스
     public boolean mBound = false; // 서비스 연결 상태
-    Intent mIntent;
 
     ListViewAdapter adapter;
 
@@ -49,7 +52,6 @@ public class MainActivity extends Activity {
         adapter = new ListViewAdapter(this); // 어댑터 객채 생성
         view.setAdapter(adapter); // 커스텀 리스트뷰에 어댑터 연결
 
-        mIntent = new Intent(MainActivity.this, LocationService.class);
 
 
         /*
@@ -102,9 +104,7 @@ public class MainActivity extends Activity {
                     Log.d("경도", longitude + "   " + change(longitude));
                 }
                 else{
-                    if(startService(mIntent) != null )
-                        bind();
-
+                    bind();
                     Toast.makeText(MainActivity.this, "서비스 바인딩", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -241,15 +241,9 @@ public class MainActivity extends Activity {
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        unbind(mConn);
-    }
-
     // bind 할때 사용
     public void bind(){
-        bindService(mIntent, mConn, Context.BIND_AUTO_CREATE);
+        bindService(new Intent(this, LocationService.class), mConn, Context.BIND_AUTO_CREATE);
     }
 
     // 서비스 bind 해제
@@ -264,6 +258,24 @@ public class MainActivity extends Activity {
         public void recvData(double latitude, double longitude) {
             //Toast.makeText(MainActivity.this, "recvData \n" + latitude + "\n" + longitude, Toast.LENGTH_SHORT).show();
 
+            /* 현재 접속중인 네트워크 확인
+             WIFI 접속시 WIFI, 데이터 사용시 MOBILE 이라고 netName 값에 저장함
+             */
+            ConnectivityManager manager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo ni = manager.getActiveNetworkInfo();
+
+
+            netName = ni.getTypeName();
+            if (netName.equals("MOBILE")) {
+                Log.i("network", "Network - > " + netName);
+            }
+            else{
+                Log.i("network", "Network - > " + netName);
+            }
+
+            setBluetooth(true);
+            setNFC(false);
+            setDataNet(true);
             setWifi(false);
             setSound(2);
         }
@@ -321,43 +333,24 @@ public class MainActivity extends Activity {
     }
 
     public void setWifi(boolean val){
-
-         /* 현재 접속중인 네트워크 확인
-         WIFI 접속시 WIFI, 데이터 사용시 MOBILE 이라고 netName 값에 저장함
-         */
-        ConnectivityManager manager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo ni = manager.getActiveNetworkInfo();
-
-
-        netName = ni.getTypeName();
-        if (netName.equals("MOBILE")) {
-            Log.i("network", "Network - > " + netName);
-        }
-        else{
-            Log.i("network", "Network - > " + netName);
-        }
         WifiManager wManager = (WifiManager)getSystemService(Context.WIFI_SERVICE);
 
         if(!val){
             if(!netName.equals("WIFI")) {
                 Toast.makeText(MainActivity.this, "ALREADY WIFI OFF.", Toast.LENGTH_SHORT).show();
-                Log.d("netName",netName + " 0");
             }
             else {
                 wManager.setWifiEnabled(false);
                 Toast.makeText(MainActivity.this, "NOW WIFI OFF.", Toast.LENGTH_SHORT).show();
-                Log.d("netName", netName + " 1");
             }
         }
         else{
             if(netName.equals("WIFI")) {
                 Toast.makeText(MainActivity.this, "ALREADY WIFI ON", Toast.LENGTH_SHORT).show();
-                Log.d("netName", netName + " 2");
             }
             else {
                 wManager.setWifiEnabled(true);
                 Toast.makeText(MainActivity.this, "NOW WIFI ON", Toast.LENGTH_SHORT).show();
-                Log.d("netName",netName + " 3");
             }
         }
     }
@@ -380,6 +373,48 @@ public class MainActivity extends Activity {
             case 3:
                 break;
         }
+    }
+
+    public void setBluetooth(boolean val)
+    {
+        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+
+        if(!val){
+            if(!adapter.isEnabled())
+                Toast.makeText(MainActivity.this, "ALREADY BLUETOOTH OFF.", Toast.LENGTH_SHORT).show();
+            else {
+                adapter.disable();
+                Toast.makeText(MainActivity.this, "NOW BLUETOOTH OFF.", Toast.LENGTH_SHORT).show();
+            }
+        }
+        else{
+            if(adapter.isEnabled())
+                Toast.makeText(MainActivity.this, "ALREADY BLUETOOTH ON", Toast.LENGTH_SHORT).show();
+            else {
+                adapter.enable();
+                Toast.makeText(MainActivity.this, "NOW BLUETOOTH ON", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    public void setNFC(boolean val)
+    {
+        NfcAdapter mNfcAdapter= NfcAdapter.getDefaultAdapter(getApplicationContext());
+
+        if (mNfcAdapter == null) {
+            // NFC is not supported
+            Toast.makeText(MainActivity.this, "NFC Cannot Used.", Toast.LENGTH_SHORT).show();
+            return ;
+        }
+
+        if(val)
+                startActivity(new Intent(android.provider.Settings.ACTION_NFC_SETTINGS));
+    }
+
+    public void setDataNet(boolean val)
+    {
+        if(val)
+            startActivity(new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS));
     }
 }
 

@@ -13,6 +13,8 @@ public class inputData {
     private boolean silent;
     private boolean no_use;
     private boolean dataNetwork;
+    private boolean nfc;
+    private boolean bluetooth;
 
 
     inputData(String setting){
@@ -111,5 +113,21 @@ public class inputData {
 
     public boolean getDataNetwork(){
         return dataNetwork;
+    }
+
+    public void setNFC(boolean val){
+        this.nfc = val;
+    }
+
+    public boolean getNFC(){
+        return nfc;
+    }
+
+    public void setBluetooth(boolean val){
+        this.bluetooth = val;
+    }
+
+    public boolean getBluetooth(){
+        return bluetooth;
     }
 }
