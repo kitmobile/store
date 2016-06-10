@@ -51,6 +51,8 @@ public class InputDataActivity extends Activity{
 
         adapter.addItem("와이파이");
         adapter.addItem("데이터네트워크");
+        adapter.addItem("블루투스");
+        adapter.addItem("NFC");
 
         Button changeData = (Button)findViewById(R.id.changeData);
         changeData.setOnClickListener(new View.OnClickListener() {
@@ -248,45 +250,86 @@ public class InputDataActivity extends Activity{
                 adapter.mListData.get(position).setVibrate(!value);
                 adapter.mListData.get(position).setSilent(!value);
                 adapter.mListData.get(position).setNouse(!value);
+                Toast.makeText(InputDataActivity.this,
+                        "getSound : " + adapter.mListData.get(position).getSound()
+                                + "\ngetVibrate : " + adapter.mListData.get(position).getVibrate()
+                                + "\ngetSilent : " + adapter.mListData.get(position).getSilent()
+                                + "\nNo use : " + adapter.mListData.get(position).getNouse()
+                        , Toast.LENGTH_SHORT).show();
+
+                Log.i("getSound", String.valueOf(adapter.mListData.get(position).getSound()));
+                Log.i("getVibrate", String.valueOf(adapter.mListData.get(position).getVibrate()));
+                Log.i("getSilent", String.valueOf(adapter.mListData.get(position).getSilent()));
+                Log.i("getNouse", String.valueOf(adapter.mListData.get(position).getNouse()));
                 break;
             case "진동" :
                 adapter.mListData.get(position).setSound(!value);
                 adapter.mListData.get(position).setVibrate(value);
                 adapter.mListData.get(position).setSilent(!value);
                 adapter.mListData.get(position).setNouse(!value);
+                Toast.makeText(InputDataActivity.this,
+                        "getSound : " + adapter.mListData.get(position).getSound()
+                                + "\ngetVibrate : " + adapter.mListData.get(position).getVibrate()
+                                + "\ngetSilent : " + adapter.mListData.get(position).getSilent()
+                                + "\nNo use : " + adapter.mListData.get(position).getNouse()
+                        , Toast.LENGTH_SHORT).show();
+
+                Log.i("getSound", String.valueOf(adapter.mListData.get(position).getSound()));
+                Log.i("getVibrate", String.valueOf(adapter.mListData.get(position).getVibrate()));
+                Log.i("getSilent", String.valueOf(adapter.mListData.get(position).getSilent()));
+                Log.i("getNouse", String.valueOf(adapter.mListData.get(position).getNouse()));
                 break;
             case "무음" :
                 adapter.mListData.get(position).setSound(!value);
                 adapter.mListData.get(position).setVibrate(!value);
                 adapter.mListData.get(position).setSilent(value);
                 adapter.mListData.get(position).setNouse(!value);
+                Toast.makeText(InputDataActivity.this,
+                        "getSound : " + adapter.mListData.get(position).getSound()
+                                + "\ngetVibrate : " + adapter.mListData.get(position).getVibrate()
+                                + "\ngetSilent : " + adapter.mListData.get(position).getSilent()
+                                + "\nNo use : " + adapter.mListData.get(position).getNouse()
+                        , Toast.LENGTH_SHORT).show();
+
+                Log.i("getSound", String.valueOf(adapter.mListData.get(position).getSound()));
+                Log.i("getVibrate", String.valueOf(adapter.mListData.get(position).getVibrate()));
+                Log.i("getSilent", String.valueOf(adapter.mListData.get(position).getSilent()));
+                Log.i("getNouse", String.valueOf(adapter.mListData.get(position).getNouse()));
                 break;
             case "사용 안함" :
                 adapter.mListData.get(position).setSound(!value);
                 adapter.mListData.get(position).setVibrate(!value);
                 adapter.mListData.get(position).setSilent(!value);
                 adapter.mListData.get(position).setNouse(value);
+                Toast.makeText(InputDataActivity.this,
+                        "getSound : " + adapter.mListData.get(position).getSound()
+                                + "\ngetVibrate : " + adapter.mListData.get(position).getVibrate()
+                                + "\ngetSilent : " + adapter.mListData.get(position).getSilent()
+                                + "\nNo use : " + adapter.mListData.get(position).getNouse()
+                        , Toast.LENGTH_SHORT).show();
+
+                Log.i("getSound", String.valueOf(adapter.mListData.get(position).getSound()));
+                Log.i("getVibrate", String.valueOf(adapter.mListData.get(position).getVibrate()));
+                Log.i("getSilent", String.valueOf(adapter.mListData.get(position).getSilent()));
+                Log.i("getNouse", String.valueOf(adapter.mListData.get(position).getNouse()));
                 break;
             case "데이터네트워크" :
                 adapter.mListData.get(position).setDataNetwork(value);
                 Toast.makeText(InputDataActivity.this, "getDataNetwork : " + adapter.mListData.get(position).getDataNetwork(), Toast.LENGTH_SHORT).show();
                 Log.i("getDataNetwork", String.valueOf(adapter.mListData.get(position).getDataNetwork()));
                 break;
+            case "NFC" :
+                adapter.mListData.get(position).setNFC(value);
+                Toast.makeText(InputDataActivity.this, "getNFC : " + adapter.mListData.get(position).getNFC(), Toast.LENGTH_SHORT).show();
+                Log.i("getNFC", String.valueOf(adapter.mListData.get(position).getNFC()));
+                break;
+            case "블루투스" :
+                adapter.mListData.get(position).setBluetooth(value);
+                Toast.makeText(InputDataActivity.this, "getBluetooth : " + adapter.mListData.get(position).getBluetooth(), Toast.LENGTH_SHORT).show();
+                Log.i("getBluetooth", String.valueOf(adapter.mListData.get(position).getBluetooth()));
+                break;
         }
-
-        Toast.makeText(InputDataActivity.this,
-                "getSound : " + adapter.mListData.get(position).getSound()
-                        + "\ngetVibrate : " + adapter.mListData.get(position).getVibrate()
-                        + "\ngetSilent : " + adapter.mListData.get(position).getSilent()
-                        + "\nNo use : " + adapter.mListData.get(position).getNouse()
-                , Toast.LENGTH_SHORT).show();
-
-        Log.i("getSound", String.valueOf(adapter.mListData.get(position).getSound()));
-        Log.i("getVibrate", String.valueOf(adapter.mListData.get(position).getVibrate()));
-        Log.i("getSilent", String.valueOf(adapter.mListData.get(position).getSilent()));
-        Log.i("getNouse", String.valueOf(adapter.mListData.get(position).getNouse()));
     }
-
 
     public double round(double val){
         return Math.round(val*1000)/1000.0;
