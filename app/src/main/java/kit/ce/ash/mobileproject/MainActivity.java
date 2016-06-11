@@ -6,6 +6,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -38,8 +39,8 @@ public class MainActivity extends Activity {
 
 
     // startActivityForResult 에서 다른 액티비티로 넘겨주는 requestCode 값
-    int newData = 1;
-    int editData = 0;
+    final int newData = 1;
+    final int editData = 0;
 
     String netName;
 
@@ -83,7 +84,36 @@ public class MainActivity extends Activity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 inputData data = adapter.mListData.get(position);
-                Toast.makeText(MainActivity.this, "위도 = " + data.getLatitude() + "\n경도 = " + data.getLongitude(), Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(MainActivity.this, InputDataActivity.class);
+
+                intent.putExtra("edit","edit");
+                intent.putExtra("position", String.valueOf(position));
+                intent.putExtra("location", data.getLocation());
+                intent.putExtra("latitude", String.valueOf(data.getLatitude()));
+                intent.putExtra("longitude", String.valueOf(data.getLongitude()));
+                intent.putExtra("wlan", String.valueOf(data.getWlan()));
+                intent.putExtra("sound", String.valueOf(data.getSound()));
+                intent.putExtra("vibrate", String.valueOf(data.getVibrate()));
+                intent.putExtra("silent", String.valueOf(data.getSilent()));
+                intent.putExtra("noUse", String.valueOf(data.getNouse()));
+                intent.putExtra("dataNetwork", String.valueOf(data.getDataNetwork()));
+                intent.putExtra("NFC", String.valueOf(data.getNFC()));
+                intent.putExtra("bluetooth", String.valueOf(data.getBluetooth()));
+
+                Log.w("position", String.valueOf(position));
+                Log.i("getLocation", data.getLocation());
+                Log.i("getLatitude", String.valueOf(data.getLatitude()));
+                Log.i("getLongitude", String.valueOf(data.getLongitude()));
+                Log.i("getWlan", String.valueOf(data.getWlan()));
+                Log.i("getSound", String.valueOf(data.getSound()));
+                Log.i("getVibrate", String.valueOf(data.getVibrate()));
+                Log.i("getSilent", String.valueOf(data.getSilent()));
+                Log.i("setNoUse", String.valueOf(data.getNouse()));
+                Log.i("getDataNetwork", String.valueOf(data.getDataNetwork()));
+                Log.i("getNFC", String.valueOf(data.getNFC()));
+                Log.i("getBluetooth", String.valueOf(data.getBluetooth()));
+
+                startActivityForResult(intent, 0);
             }
         });
 
@@ -130,10 +160,65 @@ public class MainActivity extends Activity {
         newBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                int size = adapter.getCount();
                 Intent intent = new Intent(MainActivity.this, InputDataActivity.class);
+                intent.putExtra("position", String.valueOf(size));
                 startActivityForResult(intent, newData);
             }
         });
+
+               /*
+        앱의 데이터를 휴대폰의 로컬데이터로 저장하는 SharedPreferences 인터페이스 사용
+        앱의 데이터는 onDestroy() 호출시에 로컬 데이터로 저장한다
+        앱 시작시 onCreate() 호출시에 로컬 데이터로 저장되어 있는 정보들을 파싱하여서 커스텀 리스트뷰의 각 항목에 다시 집어넣는다.
+         */
+        SharedPreferences sp = this.getSharedPreferences("sp", MODE_PRIVATE);
+        int size = 0;
+        try {
+            // onDestroy()에서 로컬 데이터로 저장한 커스텀 리스트뷰의 항목 개수를 받아와서 int형 변수로 변환
+            if (!sp.getString("size", "").equals(""))
+                size = Integer.parseInt(sp.getString("size", ""));
+        }
+        catch (NumberFormatException e){
+            e.printStackTrace();
+        }
+
+        Log.d("size", String.valueOf(size));
+
+        // 반복문을 이용하여서 로컬 데이터를 파싱하여서 커스텀 리스트뷰의 항목으로 추가
+        for (int i = 0; i < size; i++) {
+            String location;
+            double latitude;
+            double longitude;
+            boolean wlan;
+            boolean sound;
+            boolean vibrate;
+            boolean silent;
+            boolean no_use;
+            boolean dataNetwork;
+            boolean nfc;
+            boolean bluetooth;
+
+            String data = sp.getString(String.valueOf(i), "");
+            String[] dataArray = data.split("!@#@!");
+
+
+            location = dataArray[0];
+            latitude = Double.parseDouble(dataArray[1]);
+            longitude = Double.parseDouble(dataArray[2]);
+            wlan = Boolean.valueOf(dataArray[3]);
+            sound = Boolean.valueOf(dataArray[4]);
+            vibrate = Boolean.valueOf(dataArray[5]);
+            silent = Boolean.valueOf(dataArray[6]);
+            no_use = Boolean.valueOf(dataArray[7]);
+            dataNetwork = Boolean.valueOf(dataArray[8]);
+            nfc = Boolean.valueOf(dataArray[9]);
+            bluetooth = Boolean.valueOf(dataArray[10]);
+
+            adapter.addItem(location, latitude, longitude, wlan, sound, vibrate, silent, no_use, dataNetwork, nfc, bluetooth);
+
+            adapter.notifyDataSetChanged();
+        }
 
     }
 
@@ -142,18 +227,51 @@ public class MainActivity extends Activity {
         super.onActivityResult(requestCode, resultCode, intent);
         // requestCode를 사용해서 어떠한 요청인지 구분한다. 0:항목수정, 1:새항목
         switch (requestCode) {
-            case 0:
+            case editData :
                 // resultCode를 이용하여서 데이터 입력 화면에서 어떠한 결과를 처리하여서 데이터를 넘겨주는지 확인한다
                 if (resultCode == RESULT_OK) {
+                    int position = Integer.parseInt(intent.getStringExtra("position"));
+
+                    Log.w("position", String.valueOf(position));
+
+                    inputData data = adapter.mListData.get(position);
+
+                    Double latitude = round(Double.parseDouble(intent.getStringExtra("latitude")));
+                    Double longitude = round(Double.parseDouble(intent.getStringExtra("longitude")));
+
+                    data.setLocation(intent.getStringExtra("location"));
+                    data.setLatitude(latitude);
+                    data.setLongitude(longitude);
+                    data.setWlan(Boolean.valueOf(intent.getStringExtra("setWlan")));
+                    data.setSound(Boolean.valueOf(intent.getStringExtra("setSound")));
+                    data.setVibrate(Boolean.valueOf(intent.getStringExtra("setVibrate")));
+                    data.setSilent(Boolean.valueOf(intent.getStringExtra("setSilent")));
+                    data.setNouse(Boolean.valueOf(intent.getStringExtra("setNouse")));
+                    data.setDataNetwork(Boolean.valueOf(intent.getStringExtra("setDataNetwork")));
+                    data.setNFC(Boolean.valueOf(intent.getStringExtra("setNFC")));
+                    data.setBluetooth(Boolean.valueOf(intent.getStringExtra("setBluetooth")));
 
                 }
                 adapter.notifyDataSetChanged();
                 break;
-            case 1:
+            case newData:
                 if (resultCode == RESULT_OK) {
                     Double latitude = round(Double.parseDouble(intent.getStringExtra("latitude")));
                     Double longitude = round(Double.parseDouble(intent.getStringExtra("longitude")));
-                    adapter.addItem(intent.getStringExtra("location"), latitude, longitude);
+
+                    adapter.addItem(
+                            intent.getStringExtra("location"),
+                            latitude,
+                            longitude,
+                            Boolean.valueOf(intent.getStringExtra("setWlan")),
+                            Boolean.valueOf(intent.getStringExtra("setSound")),
+                            Boolean.valueOf(intent.getStringExtra("setVibrate")),
+                            Boolean.valueOf(intent.getStringExtra("setSilent")),
+                            Boolean.valueOf(intent.getStringExtra("setNoUse")),
+                            Boolean.valueOf(intent.getStringExtra("setDataNetwork")),
+                            Boolean.valueOf(intent.getStringExtra("setNFC")),
+                            Boolean.valueOf(intent.getStringExtra("setBluetooth"))
+                    );
                 }
                 adapter.notifyDataSetChanged();
                 break;
@@ -214,7 +332,7 @@ public class MainActivity extends Activity {
 
             holder.location.setText(data.getLocation());
 
-            Log.d("getLocation",data.getLocation());
+            //Log.d("getLocation",data.getLocation());
 
             adapter.notifyDataSetChanged();
 
@@ -222,9 +340,9 @@ public class MainActivity extends Activity {
         }
 
         // 새 항목 추가
-        public void addItem(String location, double latitude, double longitude) {
+        public void addItem(String location, double latitude, double longitude, boolean wlan, boolean sound, boolean vibrate, boolean silent, boolean no_use, boolean dataNetwork, boolean nfc, boolean bluetooth) {
             inputData addInfo;
-            addInfo = new inputData(location, latitude, longitude);
+            addInfo = new inputData(location, latitude, longitude, wlan, sound, vibrate, silent, no_use, dataNetwork, nfc, bluetooth);
 
             mListData.add(addInfo);
         }
@@ -239,6 +357,35 @@ public class MainActivity extends Activity {
         public void dataChange() {
             adapter.notifyDataSetChanged();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        // 앱의 데이터를 로컬 데이터로 저장하기 위한 객체 생성
+        SharedPreferences sp = this.getSharedPreferences("sp", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+
+        // 반복문을 이용하여서 커스텀 리스트뷰의 각 항목을 순서대로 저장
+        for (int i = 0; i < adapter.getCount(); i++) {
+            inputData data = adapter.mListData.get(i);
+            String str = data.getLocation() + "!@#@!"
+                    + data.getLatitude() + "!@#@!"
+                    + data.getLongitude() + "!@#@!"
+                    + data.getWlan() + "!@#@!"
+                    + data.getSound() + "!@#@!"
+                    + data.getVibrate() + "!@#@!"
+                    + data.getSilent() + "!@#@!"
+                    + data.getNouse() + "!@#@!"
+                    + data.getDataNetwork() + "!@#@!"
+                    + data.getNFC() + "!@#@!"
+                    + data.getBluetooth();
+
+            editor.putString(String.valueOf(i), str);
+        }
+        editor.putString("size", String.valueOf(adapter.getCount())); // 커스텀 리스트뷰의 항목 개수를 저장
+        editor.commit(); // 로컬 데이터로 저장
     }
 
     // bind 할때 사용
@@ -397,8 +544,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    public void setNFC(boolean val)
-    {
+    public void setNFC(boolean val) {
         NfcAdapter mNfcAdapter= NfcAdapter.getDefaultAdapter(getApplicationContext());
 
         if (mNfcAdapter == null) {
@@ -411,8 +557,7 @@ public class MainActivity extends Activity {
                 startActivity(new Intent(android.provider.Settings.ACTION_NFC_SETTINGS));
     }
 
-    public void setDataNet(boolean val)
-    {
+    public void setDataNet(boolean val) {
         if(val)
             startActivity(new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS));
     }
