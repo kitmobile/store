@@ -56,6 +56,7 @@ public class InputDataActivity extends Activity{
     boolean getDataNetwork;
     boolean getNFC;
     boolean getBluetooth;
+    boolean getWorking;
 
 
 
@@ -93,9 +94,13 @@ public class InputDataActivity extends Activity{
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent();
-                if(getIntent.getStringExtra("edit") != null)
+                if(getIntent.getStringExtra("edit") != null) {
                     intent.putExtra("position", getIntent.getStringExtra("position"));
-
+                    intent.putExtra("setWorking", String.valueOf(getWorking));
+                }
+                else{
+                    intent.putExtra("setWorking","true");
+                }
                 intent.putExtra("location", location.getText().toString());
                 intent.putExtra("latitude", latitude.getText().toString());
                 intent.putExtra("longitude", longitude.getText().toString());
@@ -107,6 +112,7 @@ public class InputDataActivity extends Activity{
                 intent.putExtra("setDataNetwork", String.valueOf(setDataNetwork));
                 intent.putExtra("setNFC", String.valueOf(setNFC));
                 intent.putExtra("setBluetooth", String.valueOf(setBluetooth));
+
                 setResult(RESULT_OK, intent);
                 finish();
             }
@@ -419,6 +425,7 @@ public class InputDataActivity extends Activity{
         getNoUse = Boolean.valueOf(getIntent.getStringExtra("noUse"));
         getNFC = Boolean.valueOf(getIntent.getStringExtra("NFC"));
         getBluetooth = Boolean.valueOf(getIntent.getStringExtra("bluetooth"));
+        getWorking = Boolean.valueOf(getIntent.getStringExtra("working"));
 
     }
 

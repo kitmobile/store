@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -99,6 +100,7 @@ public class MainActivity extends Activity {
                 intent.putExtra("dataNetwork", String.valueOf(data.getDataNetwork()));
                 intent.putExtra("NFC", String.valueOf(data.getNFC()));
                 intent.putExtra("bluetooth", String.valueOf(data.getBluetooth()));
+                intent.putExtra("working", String.valueOf(data.getWorking()));
 
                 Log.w("position", String.valueOf(position));
                 Log.i("getLocation", data.getLocation());
@@ -112,8 +114,37 @@ public class MainActivity extends Activity {
                 Log.i("getDataNetwork", String.valueOf(data.getDataNetwork()));
                 Log.i("getNFC", String.valueOf(data.getNFC()));
                 Log.i("getBluetooth", String.valueOf(data.getBluetooth()));
+                Log.i("getWorking", String.valueOf(data.getWorking()));
 
                 startActivityForResult(intent, 0);
+            }
+        });
+
+        // 커스텀 리스트뷰의 항목을 오래동안 클릭하는 경우
+        view.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                inputData data = adapter.mListData.get(position);
+
+                // 해당 프리셋을 사용하는 경우
+                if(data.getWorking()) {
+                    // 프리셋 사용안함으로 변경
+                    data.setWorking(false);
+                    // 프리셋을 사용안하는 경우에 설정할 배경
+                    view.setBackgroundColor(Color.CYAN);
+                }
+                // 해당 프리셋을 사용안하는 경우
+                else {
+                    // 프리셋 사용으로 변경
+                    data.setWorking(true);
+                    // 프리셋을 사용하는 경우에 설정할 배경
+                    view.setBackgroundColor(Color.WHITE);
+                }
+
+                adapter.notifyDataSetChanged();
+
+                // 리턴값 false - onitemclicklistener도 같이 작동, true - onitemlongclicklistener만 작동
+                return true;
             }
         });
 
@@ -198,10 +229,10 @@ public class MainActivity extends Activity {
             boolean dataNetwork;
             boolean nfc;
             boolean bluetooth;
+            boolean working;
 
             String data = sp.getString(String.valueOf(i), "");
             String[] dataArray = data.split("!@#@!");
-
 
             location = dataArray[0];
             latitude = Double.parseDouble(dataArray[1]);
@@ -214,8 +245,9 @@ public class MainActivity extends Activity {
             dataNetwork = Boolean.valueOf(dataArray[8]);
             nfc = Boolean.valueOf(dataArray[9]);
             bluetooth = Boolean.valueOf(dataArray[10]);
+            working = Boolean.valueOf(dataArray[11]);
 
-            adapter.addItem(location, latitude, longitude, wlan, sound, vibrate, silent, no_use, dataNetwork, nfc, bluetooth);
+            adapter.addItem(location, latitude, longitude, wlan, sound, vibrate, silent, no_use, dataNetwork, nfc, bluetooth, working);
 
             adapter.notifyDataSetChanged();
         }
@@ -250,10 +282,11 @@ public class MainActivity extends Activity {
                     data.setDataNetwork(Boolean.valueOf(intent.getStringExtra("setDataNetwork")));
                     data.setNFC(Boolean.valueOf(intent.getStringExtra("setNFC")));
                     data.setBluetooth(Boolean.valueOf(intent.getStringExtra("setBluetooth")));
-
+                    data.setWorking(Boolean.valueOf(intent.getStringExtra("setWorking")));
                 }
                 adapter.notifyDataSetChanged();
                 break;
+
             case newData:
                 if (resultCode == RESULT_OK) {
                     Double latitude = round(Double.parseDouble(intent.getStringExtra("latitude")));
@@ -270,8 +303,10 @@ public class MainActivity extends Activity {
                             Boolean.valueOf(intent.getStringExtra("setNoUse")),
                             Boolean.valueOf(intent.getStringExtra("setDataNetwork")),
                             Boolean.valueOf(intent.getStringExtra("setNFC")),
-                            Boolean.valueOf(intent.getStringExtra("setBluetooth"))
+                            Boolean.valueOf(intent.getStringExtra("setBluetooth")),
+                            Boolean.valueOf(intent.getStringExtra("setWorking"))
                     );
+
                 }
                 adapter.notifyDataSetChanged();
                 break;
@@ -332,17 +367,15 @@ public class MainActivity extends Activity {
 
             holder.location.setText(data.getLocation());
 
-            //Log.d("getLocation",data.getLocation());
-
             adapter.notifyDataSetChanged();
 
             return convertView;
         }
 
         // 새 항목 추가
-        public void addItem(String location, double latitude, double longitude, boolean wlan, boolean sound, boolean vibrate, boolean silent, boolean no_use, boolean dataNetwork, boolean nfc, boolean bluetooth) {
+        public void addItem(String location, double latitude, double longitude, boolean wlan, boolean sound, boolean vibrate, boolean silent, boolean no_use, boolean dataNetwork, boolean nfc, boolean bluetooth, boolean working) {
             inputData addInfo;
-            addInfo = new inputData(location, latitude, longitude, wlan, sound, vibrate, silent, no_use, dataNetwork, nfc, bluetooth);
+            addInfo = new inputData(location, latitude, longitude, wlan, sound, vibrate, silent, no_use, dataNetwork, nfc, bluetooth, working);
 
             mListData.add(addInfo);
         }
@@ -380,7 +413,8 @@ public class MainActivity extends Activity {
                     + data.getNouse() + "!@#@!"
                     + data.getDataNetwork() + "!@#@!"
                     + data.getNFC() + "!@#@!"
-                    + data.getBluetooth();
+                    + data.getBluetooth()+ "!@#@!"
+                    + data.getWorking();
 
             editor.putString(String.valueOf(i), str);
         }
@@ -403,28 +437,7 @@ public class MainActivity extends Activity {
     // onLocationChanged 호출시 획득한 위치정보를 액티비티에서 인자값으로 전달받음
     private LocationService.ICallback mCallback = new LocationService.ICallback() {
         public void recvData(double latitude, double longitude) {
-            //Toast.makeText(MainActivity.this, "recvData \n" + latitude + "\n" + longitude, Toast.LENGTH_SHORT).show();
 
-            /* 현재 접속중인 네트워크 확인
-             WIFI 접속시 WIFI, 데이터 사용시 MOBILE 이라고 netName 값에 저장함
-             */
-            ConnectivityManager manager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo ni = manager.getActiveNetworkInfo();
-
-
-            netName = ni.getTypeName();
-            if (netName.equals("MOBILE")) {
-                Log.i("network", "Network - > " + netName);
-            }
-            else{
-                Log.i("network", "Network - > " + netName);
-            }
-
-            setBluetooth(true);
-            setNFC(false);
-            setDataNet(true);
-            setWifi(false);
-            setSound(2);
         }
     };
 

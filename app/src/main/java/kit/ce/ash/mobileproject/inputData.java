@@ -29,7 +29,7 @@ public class inputData {
         this.setting = setting;
     }
 
-    inputData(String location, double latitude, double longitude, boolean wlan, boolean sound, boolean vibrate, boolean silent, boolean no_use, boolean dataNetwork, boolean nfc, boolean bluetooth){
+    inputData(String location, double latitude, double longitude, boolean wlan, boolean sound, boolean vibrate, boolean silent, boolean no_use, boolean dataNetwork, boolean nfc, boolean bluetooth, boolean working){
         this.location = location;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -41,6 +41,7 @@ public class inputData {
         this.dataNetwork = dataNetwork;
         this.nfc = nfc;
         this.bluetooth = bluetooth;
+        this.working = working;
     }
 
     public void setLocation(String location){
