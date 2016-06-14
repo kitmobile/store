@@ -35,7 +35,7 @@ public class splashActivity extends Activity {
 
         view.loadGIFResource(this, R.drawable.sp);
 
-        time.schedule(task, 3000);
+        time.schedule(task, 2000);
 
     }
 }

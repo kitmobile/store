@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.os.IBinder;
 import android.os.Bundle;
@@ -148,15 +150,9 @@ public class MainActivity extends Activity {
         testBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mBound) {
-                    double latitude = mService.getLatitude();
-                    double longitude = mService.getLongtitude();
-                    Toast.makeText(MainActivity.this, "위도 = " + change(latitude) + "\n경도 = " + change(longitude), Toast.LENGTH_LONG).show();
-                    Log.d("위도", latitude + "   " + change(latitude));
-                    Log.d("경도", longitude + "   " + change(longitude));
-                }
-                else{
+                if (!mBound) {
                     bind();
+                    mBound = true;
                     Toast.makeText(MainActivity.this, "서비스 바인딩", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -437,10 +433,17 @@ public class MainActivity extends Activity {
         public void recvData(double latitude, double longitude) {
             for(int i=0 ; i<adapter.getCount(); i++) {
 
+                Log.i("locationLatitude",String.valueOf(round(latitude)));
+                Log.i("locationLongitude",String.valueOf(round(longitude)));
+
                 inputData data = adapter.mListData.get(i);
 
+                Log.i("dataLatitude",String.valueOf(data.getLatitude()));
+                Log.i("dataLongitude",String.valueOf(data.getLongitude()));
+
                 if(data.getWorking()) {
-                    if(data.getLatitude() == latitude && data.getLongitude() == longitude){
+                    Log.i("data.getWorking",String.valueOf(data.getWorking()));
+                    if(data.getLatitude() == round(latitude) && data.getLongitude() == round(longitude)){
                         setWifi(data.getWlan());
                         setDataNet(data.getDataNetwork());
                         setBluetooth(data.getBluetooth());
@@ -477,58 +480,25 @@ public class MainActivity extends Activity {
         }
     };
 
-
-    // double로 된 위,경도 값을 받아와서 도/분/초 String 값으로 변경
-    public String change(double val){
-        String lat = "";
-        int doe;
-        double bun;
-        double cho;
-
-        // val = 36.1455559, = 36도 8분 44.00초
-
-        doe = (int)val; // 36
-
-        lat = String.valueOf(doe) + "도 "; // 36도
-
-        bun = (val-doe) * 60; // 0.1455559 * 60 = 8.733354
-
-        lat = lat + String.valueOf((int)bun) + "분 "; // 36도 8분
-
-        cho = (bun-(int)bun) * 60; // 0.733354 * 60 = 44.00124
-
-        NumberFormat nf = NumberFormat.getInstance();
-        nf.setMinimumFractionDigits(2);//소수점 아래 최소 자리수
-        nf.setMaximumFractionDigits(2);//소수점 아래 최대 자리수
-
-        lat = lat + nf.format(cho) + "초"; // 36도 8분 44.00초
-
-        return lat;
-    }
-
     public double round(double val){
         return Math.round(val*1000)/1000.0;
     }
 
     public void setWifi(boolean val){
         WifiManager wManager = (WifiManager)getSystemService(Context.WIFI_SERVICE);
+        ConnectivityManager manager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo ni = manager.getActiveNetworkInfo();
 
-        if(!val){
-            if(!netName.equals("WIFI")) {
-                Toast.makeText(MainActivity.this, "ALREADY WIFI OFF.", Toast.LENGTH_SHORT).show();
-            }
-            else {
+        netName = ni.getTypeName();
+
+        if(!val){ // 와이파이 프리셋이 사용안함일때, 현재 네트워크가 와이파이라면 와이파이를 사용안함
+            if(netName.equals("WIFI")) {
                 wManager.setWifiEnabled(false);
-                Toast.makeText(MainActivity.this, "NOW WIFI OFF.", Toast.LENGTH_SHORT).show();
             }
         }
-        else{
-            if(netName.equals("WIFI")) {
-                Toast.makeText(MainActivity.this, "ALREADY WIFI ON", Toast.LENGTH_SHORT).show();
-            }
-            else {
+        else{ // 와이파이 프리셋이 사용함일때, 현재 네트워크가 와이파이가 아니라면 와이파이를 켬
+            if(!netName.equals("WIFI")) {
                 wManager.setWifiEnabled(true);
-                Toast.makeText(MainActivity.this, "NOW WIFI ON", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -538,40 +508,28 @@ public class MainActivity extends Activity {
         switch (val) {
             case 0:
                 audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL); //소리
-                Toast.makeText(MainActivity.this, "NOW RINGTONE", Toast.LENGTH_SHORT).show();
                 break;
             case 1:
                 audioManager.setRingerMode(AudioManager.RINGER_MODE_VIBRATE); //진동
-                Toast.makeText(MainActivity.this, "NOW VIBRATE", Toast.LENGTH_SHORT).show();
                 break;
             case 2:
                 audioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT); //무음
-                Toast.makeText(MainActivity.this, "NOW SILENT", Toast.LENGTH_SHORT).show();
                 break;
             case 3:
                 break;
         }
     }
 
-    public void setBluetooth(boolean val)
-    {
+    public void setBluetooth(boolean val) {
         BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
 
-        if(!val){
-            if(!adapter.isEnabled())
-                Toast.makeText(MainActivity.this, "ALREADY BLUETOOTH OFF.", Toast.LENGTH_SHORT).show();
-            else {
-                adapter.disable();
-                Toast.makeText(MainActivity.this, "NOW BLUETOOTH OFF.", Toast.LENGTH_SHORT).show();
-            }
-        }
-        else{
+        if(!val){ // 블루투스 프리셋이 사용안함일때, 블루투스가 이미 사용중이면 사용안함으로 변경
             if(adapter.isEnabled())
-                Toast.makeText(MainActivity.this, "ALREADY BLUETOOTH ON", Toast.LENGTH_SHORT).show();
-            else {
+                adapter.disable();
+        }
+        else{ // 블루투스 프리셋이 사용함일때, 블루투스가 현재 사용중이지 않으면 사용으로 변경
+            if(!adapter.isEnabled())
                 adapter.enable();
-                Toast.makeText(MainActivity.this, "NOW BLUETOOTH ON", Toast.LENGTH_SHORT).show();
-            }
         }
     }
 
