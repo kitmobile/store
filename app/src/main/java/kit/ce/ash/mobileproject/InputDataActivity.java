@@ -25,8 +25,8 @@ import java.util.ArrayList;
 public class InputDataActivity extends Activity{
 
     EditText location;
-    EditText latitude;
-    EditText longitude;
+    //EditText latitude;
+    //EditText longitude;
 
     double getLatitudeMap;
     double getLongitudeMap;
@@ -71,8 +71,8 @@ public class InputDataActivity extends Activity{
 
 
         location = (EditText)findViewById(R.id.location);
-        latitude = (EditText)findViewById(R.id.latitude);
-        longitude = (EditText)findViewById(R.id.longitude);
+        //latitude = (EditText)findViewById(R.id.latitude);
+        //longitude = (EditText)findViewById(R.id.longitude);
 
         if(getIntent.getStringExtra("edit") != null){
             setData(getIntent);
@@ -93,28 +93,37 @@ public class InputDataActivity extends Activity{
         changeData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent();
-                if(getIntent.getStringExtra("edit") != null) {
-                    intent.putExtra("position", getIntent.getStringExtra("position"));
-                    intent.putExtra("setWorking", String.valueOf(getWorking));
+                if(getLatitudeMap == 0 || getLongitudeMap == 0){
+                    Toast.makeText(InputDataActivity.this, "위치를 선택하지 않았습니다\n지도를 열어 위치를 선택하세요", Toast.LENGTH_SHORT).show();
                 }
-                else{
-                    intent.putExtra("setWorking","true");
+                else if(location.getText().toString().length() == 0){
+                    Toast.makeText(InputDataActivity.this, "위치를 입력하세요", Toast.LENGTH_SHORT).show();
                 }
-                intent.putExtra("location", location.getText().toString());
-                intent.putExtra("latitude", latitude.getText().toString());
-                intent.putExtra("longitude", longitude.getText().toString());
-                intent.putExtra("setWlan", String.valueOf(setWlan));
-                intent.putExtra("setSound", String.valueOf(setSound));
-                intent.putExtra("setVibrate", String.valueOf(setVibrate));
-                intent.putExtra("setSilent", String.valueOf(setSilent));
-                intent.putExtra("setNoUse", String.valueOf(setNoUse));
-                intent.putExtra("setDataNetwork", String.valueOf(setDataNetwork));
-                intent.putExtra("setNFC", String.valueOf(setNFC));
-                intent.putExtra("setBluetooth", String.valueOf(setBluetooth));
+                else {
 
-                setResult(RESULT_OK, intent);
-                finish();
+
+                    Intent intent = new Intent();
+                    if (getIntent.getStringExtra("edit") != null) {
+                        intent.putExtra("position", getIntent.getStringExtra("position"));
+                        intent.putExtra("setWorking", String.valueOf(getWorking));
+                    } else {
+                        intent.putExtra("setWorking", "true");
+                    }
+                    intent.putExtra("location", location.getText().toString());
+                    intent.putExtra("latitude", String.valueOf(getLatitudeMap));
+                    intent.putExtra("longitude", String.valueOf(getLongitudeMap));
+                    intent.putExtra("setWlan", String.valueOf(setWlan));
+                    intent.putExtra("setSound", String.valueOf(setSound));
+                    intent.putExtra("setVibrate", String.valueOf(setVibrate));
+                    intent.putExtra("setSilent", String.valueOf(setSilent));
+                    intent.putExtra("setNoUse", String.valueOf(setNoUse));
+                    intent.putExtra("setDataNetwork", String.valueOf(setDataNetwork));
+                    intent.putExtra("setNFC", String.valueOf(setNFC));
+                    intent.putExtra("setBluetooth", String.valueOf(setBluetooth));
+
+                    setResult(RESULT_OK, intent);
+                    finish();
+                }
             }
         });
 
@@ -124,12 +133,12 @@ public class InputDataActivity extends Activity{
             public void onClick(View v) {
                 Intent intent = new Intent(InputDataActivity.this, GMapActivity.class);
 
-                if(latitude.getText().toString().equals("") || longitude.getText().toString().equals("")){
+                if(getLatitudeMap == 0 || getLongitudeMap == 0){
                     intent.putExtra("edit", "new");
                 }
                 else{
-                    intent.putExtra("latitude", String.valueOf(latitude.getText()));
-                    intent.putExtra("longitude", String.valueOf(longitude.getText()));
+                    intent.putExtra("latitude", String.valueOf(getLatitudeMap));
+                    intent.putExtra("longitude", String.valueOf(getLongitudeMap));
                     intent.putExtra("edit", "edit");
                 }
                 startActivityForResult(intent, 2);
@@ -150,8 +159,8 @@ public class InputDataActivity extends Activity{
                         getLatitudeMap = round(Double.parseDouble(intent.getStringExtra("latitude")));
                         getLongitudeMap = round(Double.parseDouble(intent.getStringExtra("longitude")));
 
-                        latitude.setText(String.valueOf(getLatitudeMap));
-                        longitude.setText(String.valueOf(getLongitudeMap));
+                        //latitude.setText(String.valueOf(getLatitudeMap));
+                        //longitude.setText(String.valueOf(getLongitudeMap));
 
 
                         Log.i("getLatitude", String.valueOf(getLatitudeMap));
@@ -371,7 +380,7 @@ public class InputDataActivity extends Activity{
                 setSilent = value;
                 setNoUse = !value;
                 break;
-            case "사용 안함" :
+            case "사용안함" :
                 setSound = !value;
                 setVibrate = !value;
                 setSilent = !value;
@@ -414,8 +423,11 @@ public class InputDataActivity extends Activity{
         Log.i("bluetooth", getIntent.getStringExtra("bluetooth"));
 
         location.setText(getIntent.getStringExtra("location"));
-        latitude.setText(getIntent.getStringExtra("latitude"));
-        longitude.setText(getIntent.getStringExtra("longitude"));
+        //latitude.setText(getIntent.getStringExtra("latitude"));
+        //longitude.setText(getIntent.getStringExtra("longitude"));
+
+        getLatitudeMap = Double.parseDouble(getIntent.getStringExtra("latitude"));
+        getLongitudeMap = Double.parseDouble(getIntent.getStringExtra("longitude"));
 
         getWlan = Boolean.valueOf(getIntent.getStringExtra("wlan"));
         getDataNetwork = Boolean.valueOf(getIntent.getStringExtra("dataNetwork"));

@@ -1,5 +1,6 @@
 package kit.ce.ash.mobileproject;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.ComponentName;
@@ -7,10 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.media.AudioManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.os.IBinder;
 import android.os.Bundle;
@@ -26,8 +24,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.nfc.NfcAdapter;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 
@@ -38,10 +34,11 @@ public class MainActivity extends Activity {
 
     ListViewAdapter adapter;
 
-
     // startActivityForResult 에서 다른 액티비티로 넘겨주는 requestCode 값
     final int newData = 1;
     final int editData = 0;
+
+    ActionBar aBar;
 
     String netName;
 
@@ -53,8 +50,6 @@ public class MainActivity extends Activity {
         ListView view = (ListView)findViewById(R.id.listView);
         adapter = new ListViewAdapter(this); // 어댑터 객채 생성
         view.setAdapter(adapter); // 커스텀 리스트뷰에 어댑터 연결
-
-
 
         /*
         리스트뷰를 스와이프 하여서 커스텀 리스트뷰의 항목을 삭제하는 코드
@@ -130,15 +125,11 @@ public class MainActivity extends Activity {
                 if(data.getWorking()) {
                     // 프리셋 사용안함으로 변경
                     data.setWorking(false);
-                    // 프리셋을 사용안하는 경우에 설정할 배경
-                    view.setBackgroundColor(Color.CYAN);
                 }
                 // 해당 프리셋을 사용안하는 경우
                 else {
                     // 프리셋 사용으로 변경
                     data.setWorking(true);
-                    // 프리셋을 사용하는 경우에 설정할 배경
-                    view.setBackgroundColor(Color.WHITE);
                 }
 
                 adapter.notifyDataSetChanged();
@@ -186,6 +177,7 @@ public class MainActivity extends Activity {
 
         // 새 항목 추가하는 버튼 객체 생성
         Button newBtn = (Button)findViewById(R.id.newBtn);
+        newBtn.setBackgroundResource(R.drawable.more);
 
         // 버튼의 클릭리스너 생성
         newBtn.setOnClickListener(new View.OnClickListener() {
@@ -367,6 +359,12 @@ public class MainActivity extends Activity {
 
             holder.location.setText(data.getLocation());
 
+            if(data.getWorking()) {
+                holder.location.setBackgroundResource(R.drawable.preseton);
+            }
+            else{
+                holder.location.setBackgroundResource(R.drawable.presetoff);
+            }
             adapter.notifyDataSetChanged();
 
             return convertView;
@@ -437,7 +435,27 @@ public class MainActivity extends Activity {
     // onLocationChanged 호출시 획득한 위치정보를 액티비티에서 인자값으로 전달받음
     private LocationService.ICallback mCallback = new LocationService.ICallback() {
         public void recvData(double latitude, double longitude) {
+            for(int i=0 ; i<adapter.getCount(); i++) {
 
+                inputData data = adapter.mListData.get(i);
+
+                if(data.getWorking()) {
+                    if(data.getLatitude() == latitude && data.getLongitude() == longitude){
+                        setWifi(data.getWlan());
+                        setDataNet(data.getDataNetwork());
+                        setBluetooth(data.getBluetooth());
+                        if(data.getSound())
+                            setSound(0);
+                        else if(data.getVibrate()){
+                            setSound(1);
+                        }
+                        else if(data.getSilent()){
+                            setSound(2);
+                        }
+                        setNFC(data.getNFC());
+                    }
+                }
+            }
         }
     };
 

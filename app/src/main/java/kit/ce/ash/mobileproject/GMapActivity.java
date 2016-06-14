@@ -56,6 +56,7 @@ public class GMapActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         LatLng kumoh = new LatLng(lat, lon);
+        mMap.addMarker(new MarkerOptions().position(kumoh).title("현재 선택한 지점"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(kumoh, 13));
 
         Log.i("lat2",String.valueOf(lat));
@@ -75,8 +76,6 @@ public class GMapActivity extends FragmentActivity implements OnMapReadyCallback
                 lat = latLng.latitude;
                 lon = latLng.longitude;
                 markerOptions.getPosition();
-
-                Toast.makeText(GMapActivity.this, "latitude = " + lat + "\nlongitude = " + lon, Toast.LENGTH_SHORT).show();
 
                 Log.d("latitude", String.valueOf(lat));
                 Log.d("longitude", String.valueOf(lon));
