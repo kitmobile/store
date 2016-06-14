@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+
+    </group>
+
+    <item android:title="프리셋 관련">
+        <menu>
+            <item
+                android:id="@+id/nav_preset_all_on"
+                android:icon="@drawable/all_on"
+                android:title="모든 프리셋 활성화" />
+            <item
+                android:id="@+id/nav_preset_all_off"
+                android:icon="@drawable/all_off"
+                android:title="모든 프리셋 비활성" />
+            <item
+                android:id="@+id/nav_preset_all_delete"
+                android:icon="@drawable/delete"
+                android:title="모든 프리셋 삭제" />
+        </menu>
+    </item>
+
+    <item android:title="저작권 관련">
+        <menu>
+            <item
+                android:id="@+id/nav_copyright"
+                android:icon="@drawable/copyright_icon"
+                android:title="저작권 페이지" />
+        </menu>
+    </item>
+
+</menu>

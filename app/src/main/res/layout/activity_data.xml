@@ -1,0 +1,157 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/inputdata1">
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:id="@+id/layout_setPreset"
+        android:layout_marginTop="20dp">
+
+        <Button
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/btn"
+            android:textColor="@color/common_google_signin_btn_text_dark_focused"
+            android:text="지도 열기"
+            android:textSize="20dp"
+            android:id="@+id/openMap" />
+    </LinearLayout>
+
+    <TableLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tablelayout"
+        android:layout_below="@+id/layout_setPreset">
+
+        <TableRow>
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:textSize="25dp"
+                android:textColor="@color/colorWhite"
+                android:text="장소명" />
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/location"
+                android:textSize="25dp"
+                android:textColor="@color/colorWhite"
+                android:singleLine="true"
+                android:imeOptions="actionDone"/>
+        </TableRow>
+<!--
+        <TableRow>
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="위도" />
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                android:id="@+id/latitude"/>
+        </TableRow>
+
+
+        <TableRow>
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="경도" />
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                android:id="@+id/longitude"/>
+        </TableRow>
+-->
+    </TableLayout>
+
+    <ListView
+        android:layout_marginTop="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/checkListView"
+        android:divider="@null"
+        android:layout_below="@+id/tablelayout">
+	
+    </ListView>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:id="@+id/soundset"
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/checkListView">
+
+        <RadioGroup
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/SoundGroup">
+
+            <RadioButton
+                android:text="소리"
+                android:textSize="25dp"
+                android:textColor="@color/colorWhite"
+                android:id="@+id/radio0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <RadioButton
+                android:text="진동"
+                android:id="@+id/radio1"
+                android:textSize="25dp"
+                android:textColor="@color/colorWhite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <RadioButton
+                android:text="무음"
+                android:id="@+id/radio2"
+                android:textSize="25dp"
+                android:textColor="@color/colorWhite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <RadioButton
+                android:text="사용안함"
+                android:id="@+id/radio3"
+                android:textSize="25dp"
+                android:textColor="@color/colorWhite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            </RadioGroup>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:id="@+id/layout"
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/soundset">
+
+        <Button
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/btn"
+            android:textColor="@color/common_google_signin_btn_text_dark_focused"
+            android:text="등록/변경"
+            android:textSize="20dp"
+            android:id="@+id/changeData" />
+        <Button
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/btn"
+            android:textColor="@color/common_google_signin_btn_text_dark_focused"
+            android:text="프리셋 삭제"
+            android:textSize="20dp"
+            android:id="@+id/delData" />
+    </LinearLayout>
+</RelativeLayout>
