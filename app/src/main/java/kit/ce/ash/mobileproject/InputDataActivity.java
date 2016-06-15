@@ -99,10 +99,10 @@ public class InputDataActivity extends Activity{
             @Override
             public void onClick(View v) {
                 if(getLatitudeMap == 0 || getLongitudeMap == 0){
-                    Toast.makeText(InputDataActivity.this, "위치를 선택하지 않았습니다\n지도를 열어 위치를 선택하세요", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(InputDataActivity.this, "위치를 선택하지 않았습니다\n지도를 열어 위치를 선택하세요", Toast.LENGTH_LONG).show();
                 }
                 else if(location.getText().toString().length() == 0){
-                    Toast.makeText(InputDataActivity.this, "위치를 입력하세요", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(InputDataActivity.this, "위치를 입력하세요", Toast.LENGTH_LONG).show();
                 }
                 else {
 

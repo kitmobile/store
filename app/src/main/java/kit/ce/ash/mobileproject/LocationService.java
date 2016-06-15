@@ -170,15 +170,15 @@ public class LocationService extends Service{
         public void onStatusChanged(String provider, int status, Bundle extras) {
             switch (status) {
                 case LocationProvider.AVAILABLE:
-                    //Toast.makeText(LocationService.this, provider +" Available", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(LocationService.this, provider +" Available", Toast.LENGTH_LONG).show();
                     Log.e("LocationProvider : ", provider + " Available");
                     break;
                 case LocationProvider.OUT_OF_SERVICE:
-                    //Toast.makeText(LocationService.this, provider +" Out of Service", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(LocationService.this, provider +" Out of Service", Toast.LENGTH_LONG).show();
                     Log.e("LocationProvider : ", provider + " Out of Service");
                     break;
                 case LocationProvider.TEMPORARILY_UNAVAILABLE:
-                    //Toast.makeText(LocationService.this, provider +" Service Stop", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(LocationService.this, provider +" Service Stop", Toast.LENGTH_LONG).show();
                     Log.e("LocationProvider : ", provider + " Service Stop");
                     break;
             }

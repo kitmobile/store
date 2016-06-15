@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // 만약에 GPS를 사용할 수 없다면
         if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-            Toast.makeText(getApplicationContext(), "GPS가 꺼져 있습니다.\nGPS를 활성화 해야지 사용가능합니다.\nGPS 설정화면을 엽니다.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "GPS가 꺼져 있습니다.\nGPS를 활성화 해야지 사용가능합니다.\nGPS 설정화면을 엽니다.", Toast.LENGTH_LONG).show();
             // GPS 설정 액티비티 실행
             startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
             finish();
@@ -634,7 +634,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if(val){
             if (mNfcAdapter == null) {
                 // NFC is not supported
-                Toast.makeText(MainActivity.this, "NFC Cannot Used.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "NFC Cannot Used.", Toast.LENGTH_LONG).show();
             }
             else {
                 startActivity(new Intent(android.provider.Settings.ACTION_NFC_SETTINGS));
