@@ -1,7 +1,9 @@
 package kit.ce.ash.mobileproject;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputFilter;
@@ -75,7 +77,7 @@ public class InputDataActivity extends Activity{
         //latitude = (EditText)findViewById(R.id.latitude);
         //longitude = (EditText)findViewById(R.id.longitude);
 
-        location.setFilters(new InputFilter[] { new InputFilter.LengthFilter(6) });
+        location.setFilters(new InputFilter[] { new InputFilter.LengthFilter(8) });
 
         if(getIntent.getStringExtra("edit") != null){
             setData(getIntent);
@@ -126,6 +128,40 @@ public class InputDataActivity extends Activity{
 
                     setResult(RESULT_OK, intent);
                     finish();
+                }
+            }
+        });
+
+        Button delData = (Button)findViewById(R.id.delData);
+        delData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    if (getIntent.getStringExtra("new").equals("new"))
+                        Toast.makeText(InputDataActivity.this, "새 항목 만들기여서 삭제할 항목이 없습니다.", Toast.LENGTH_LONG).show();
+                }
+                catch(NullPointerException e){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(InputDataActivity.this);
+                    builder.setTitle("프리셋 삭제")
+                            .setMessage("정말로 해당 항목을 목록에서 삭제하시겠습니까?")
+                            .setCancelable(false)
+                            .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    Intent intent = new Intent();
+                                    intent.putExtra("position", String.valueOf(position));
+                                    Log.i("position",String.valueOf(position));
+                                    setResult(2, intent);
+                                    finish();
+                                }
+                            })
+
+                            .setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    dialog.cancel();
+                                }
+                            });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
                 }
             }
         });
@@ -413,9 +449,11 @@ public class InputDataActivity extends Activity{
 
         position = Integer.parseInt(getIntent.getStringExtra("position"));
 
+        Log.i("position",String.valueOf(position));
+
         Log.i("location", getIntent.getStringExtra("location"));
-        Log.i("location", getIntent.getStringExtra("latitude"));
-        Log.i("location", getIntent.getStringExtra("longitude"));
+        Log.i("latitude", getIntent.getStringExtra("latitude"));
+        Log.i("longitude", getIntent.getStringExtra("longitude"));
         Log.i("wlan", getIntent.getStringExtra("wlan"));
         Log.i("sound", getIntent.getStringExtra("sound"));
         Log.i("vibrate", getIntent.getStringExtra("vibrate"));

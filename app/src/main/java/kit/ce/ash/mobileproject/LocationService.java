@@ -1,6 +1,8 @@
 package kit.ce.ash.mobileproject;
 
+import android.app.ActivityManager;
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Criteria;
@@ -11,6 +13,7 @@ import android.location.LocationProvider;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -70,8 +73,6 @@ public class LocationService extends Service{
     public void onCreate(){
         super.onCreate();
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
-            Toast.makeText(LocationService.this, "GPS is OFF, Please GPS ON", Toast.LENGTH_SHORT).show();
 
         mLocationListener = new myLocationListener();
 
@@ -185,10 +186,13 @@ public class LocationService extends Service{
 
         @Override
         public void onProviderEnabled(String provider) {
+            Log.i("Provider","enabled");
         }
 
         @Override
         public void onProviderDisabled(String provider) {
+            Log.i("Provider","disabled");
+            Toast.makeText(getApplicationContext(), "현재 위치 서비스를 사용할 수 없습니다.\nGPS가 활성화 되었는지 확인하세요.", Toast.LENGTH_LONG).show();
         }
     }
 }

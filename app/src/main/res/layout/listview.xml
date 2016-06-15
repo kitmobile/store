@@ -11,10 +11,11 @@
             android:id="@+id/location"
             android:layout_width="0dip"
             android:layout_height="100dp"
-            android:layout_margin="10dp"
+            android:layout_marginTop="20dp"
             android:layout_weight="1"
             android:text="location"
-            android:textSize="30dp"
+            android:paddingLeft="15dp"
+            android:textSize="28dp"
             android:gravity="center_vertical"/>
 
     </TableRow>

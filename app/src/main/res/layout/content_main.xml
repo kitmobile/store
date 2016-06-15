@@ -22,7 +22,9 @@
         android:id="@+id/newBtn"
         android:background="@drawable/more"
         android:layout_alignParentBottom="true"
-        android:layout_alignLeft="@+id/listView"
+        android:layout_centerHorizontal="true"
+        
+
         />
 
 </RelativeLayout>

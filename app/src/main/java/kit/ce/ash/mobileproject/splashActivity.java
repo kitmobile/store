@@ -3,6 +3,9 @@ package kit.ce.ash.mobileproject;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Display;
+import android.view.WindowManager;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -28,6 +31,14 @@ public class splashActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+
+        Display display = ((WindowManager)getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
+
+        int displayWidth = display.getWidth();
+        int displayHeight = display.getHeight();
+
+        Log.i("displayWidth", "" + displayWidth);
+        Log.i("displayHeight", "" + displayHeight);
 
         //GifView view = (GifView)findViewById(R.id.gifView);
 

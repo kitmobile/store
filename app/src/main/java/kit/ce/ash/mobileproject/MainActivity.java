@@ -1,12 +1,15 @@
 package kit.ce.ash.mobileproject;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.location.LocationManager;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -14,8 +17,7 @@ import android.net.wifi.WifiManager;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,6 +44,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public LocationService mService; // bind 타입 서비스
     public boolean mBound = false; // 서비스 연결 상태
 
+    boolean useGPS;
+
     ListViewAdapter adapter;
 
     // startActivityForResult 에서 다른 액티비티로 넘겨주는 requestCode 값
@@ -56,6 +60,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        // 만약에 GPS를 사용할 수 없다면
+        if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+            Toast.makeText(getApplicationContext(), "GPS가 꺼져 있습니다.\nGPS를 활성화 해야지 사용가능합니다.\nGPS 설정화면을 엽니다.", Toast.LENGTH_SHORT).show();
+            // GPS 설정 액티비티 실행
+            startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+            finish();
+        }
+        else{
+            useGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            Log.i("useGPS",String.valueOf(useGPS));
+        }
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -162,7 +181,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // 새 항목 추가하는 버튼 객체 생성
         Button newBtn = (Button)findViewById(R.id.newBtn);
-        newBtn.setBackgroundResource(R.drawable.more);
 
         // 버튼의 클릭리스너 생성
         newBtn.setOnClickListener(new View.OnClickListener() {
@@ -170,6 +188,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onClick(View v) {
                 int size = adapter.getCount();
                 Intent intent = new Intent(MainActivity.this, InputDataActivity.class);
+                intent.putExtra("new","new");
                 intent.putExtra("position", String.valueOf(size));
                 startActivityForResult(intent, newData);
             }
@@ -279,14 +298,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             adapter.notifyDataSetChanged();
         }
         else if(id == R.id.nav_preset_all_delete){
-            Log.i("adapter.getCount()",String.valueOf(adapter.getCount()));
-            for(int i=0; i<adapter.getCount(); i++) {
-                adapter.mListData.clear();
-                adapter.notifyDataSetChanged();
-            }
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setTitle("모든 프리셋 삭제")
+                    .setMessage("정말로 모든 프리셋을 목록에서 삭제하시겠습니까?")
+                    .setCancelable(false)
+                    .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            for(int i=0; i<adapter.getCount(); i++) {
+                                adapter.mListData.clear();
+                                adapter.notifyDataSetChanged();
+                            }
+                        }
+                    })
+                    .setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            dialog.cancel();
+                        }
+                    });
+            AlertDialog dialog = builder.create();
+            dialog.show();
         }
-
-
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -297,8 +328,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onStart(){
         super.onStart();
 
-        bind();
-        mBound = true;
+        if(useGPS){
+            bind();
+            mBound = true;
+        }
     }
 
     // 액티비티가 특정한 값을 받아올 때 자동 호출
@@ -330,6 +363,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     data.setNFC(Boolean.valueOf(intent.getStringExtra("setNFC")));
                     data.setBluetooth(Boolean.valueOf(intent.getStringExtra("setBluetooth")));
                     data.setWorking(Boolean.valueOf(intent.getStringExtra("setWorking")));
+                }
+                else if(resultCode == 2){
+                    adapter.remove(Integer.parseInt(intent.getStringExtra("position")));
                 }
                 adapter.notifyDataSetChanged();
                 break;
