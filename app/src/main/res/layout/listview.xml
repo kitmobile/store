@@ -10,10 +10,13 @@
         <TextView
             android:id="@+id/location"
             android:layout_width="0dip"
-            android:layout_height="wrap_content"
+            android:layout_height="100dp"
+            android:layout_marginTop="20dp"
             android:layout_weight="1"
             android:text="location"
-            android:textSize="25dp"/>
+            android:paddingLeft="15dp"
+            android:textSize="28dp"
+            android:gravity="center_vertical"/>
 
     </TableRow>
 

@@ -1,6 +1,8 @@
 package kit.ce.ash.mobileproject;
 
+import android.app.ActivityManager;
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Criteria;
@@ -11,6 +13,7 @@ import android.location.LocationProvider;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -69,11 +72,7 @@ public class LocationService extends Service{
     @Override
     public void onCreate(){
         super.onCreate();
-        Toast.makeText(LocationService.this, "Create Service", Toast.LENGTH_SHORT).show();
-
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
-            Toast.makeText(LocationService.this, "GPS is OFF, Please GPS ON", Toast.LENGTH_SHORT).show();
 
         mLocationListener = new myLocationListener();
 
@@ -88,12 +87,6 @@ public class LocationService extends Service{
         catch (SecurityException e) {
             Log.e("requestLocationUpdate", "Permission Denied");
         }
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        super.onStartCommand(intent, flags, startId);
-        return START_STICKY;
     }
 
     // 마지막 위치를 받아와 출력하는 메소드
@@ -145,26 +138,22 @@ public class LocationService extends Service{
 
     @Override
     public IBinder onBind(Intent intent) {
-        Toast.makeText(LocationService.this, "Bind Service", Toast.LENGTH_SHORT).show();
         return mBinder;
     }
 
     @Override
     public boolean onUnbind(Intent intent) {
-        Toast.makeText(LocationService.this, "Unbind Service", Toast.LENGTH_SHORT).show();
         return super.onUnbind(intent);
     }
 
     @Override
     public void onDestroy() {
-        Toast.makeText(LocationService.this, "Destroy Service", Toast.LENGTH_SHORT).show();
         super.onDestroy();
     }
 
     public class myLocationListener implements LocationListener {
         @Override
         public void onLocationChanged(Location location) {
-            Toast.makeText(LocationService.this, "Location Changed", Toast.LENGTH_SHORT).show();
 
             // 위치정보 획득
             latitude = location.getLatitude();
@@ -181,15 +170,15 @@ public class LocationService extends Service{
         public void onStatusChanged(String provider, int status, Bundle extras) {
             switch (status) {
                 case LocationProvider.AVAILABLE:
-                    //Toast.makeText(LocationService.this, provider +" Available", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(LocationService.this, provider +" Available", Toast.LENGTH_LONG).show();
                     Log.e("LocationProvider : ", provider + " Available");
                     break;
                 case LocationProvider.OUT_OF_SERVICE:
-                    //Toast.makeText(LocationService.this, provider +" Out of Service", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(LocationService.this, provider +" Out of Service", Toast.LENGTH_LONG).show();
                     Log.e("LocationProvider : ", provider + " Out of Service");
                     break;
                 case LocationProvider.TEMPORARILY_UNAVAILABLE:
-                    //Toast.makeText(LocationService.this, provider +" Service Stop", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(LocationService.this, provider +" Service Stop", Toast.LENGTH_LONG).show();
                     Log.e("LocationProvider : ", provider + " Service Stop");
                     break;
             }
@@ -197,12 +186,13 @@ public class LocationService extends Service{
 
         @Override
         public void onProviderEnabled(String provider) {
-            Toast.makeText(LocationService.this, provider + " Provider Enabled", Toast.LENGTH_SHORT).show();
+            Log.i("Provider","enabled");
         }
 
         @Override
         public void onProviderDisabled(String provider) {
-            Toast.makeText(LocationService.this, provider + " Provider Disenabled", Toast.LENGTH_SHORT).show();
+            Log.i("Provider","disabled");
+            Toast.makeText(getApplicationContext(), "현재 위치 서비스를 사용할 수 없습니다.\nGPS가 활성화 되었는지 확인하세요.", Toast.LENGTH_LONG).show();
         }
     }
 }

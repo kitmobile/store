@@ -13,6 +13,8 @@ public class inputData {
     private boolean silent;
     private boolean no_use;
     private boolean dataNetwork;
+    private boolean nfc;
+    private boolean bluetooth;
 
 
     inputData(String setting){
@@ -27,10 +29,19 @@ public class inputData {
         this.setting = setting;
     }
 
-    inputData(String location, double latitude, double longitude){
+    inputData(String location, double latitude, double longitude, boolean wlan, boolean sound, boolean vibrate, boolean silent, boolean no_use, boolean dataNetwork, boolean nfc, boolean bluetooth, boolean working){
         this.location = location;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.wlan = wlan;
+        this.sound = sound;
+        this.vibrate = vibrate;
+        this.silent = silent;
+        this.no_use = no_use;
+        this.dataNetwork = dataNetwork;
+        this.nfc = nfc;
+        this.bluetooth = bluetooth;
+        this.working = working;
     }
 
     public void setLocation(String location){
@@ -111,5 +122,21 @@ public class inputData {
 
     public boolean getDataNetwork(){
         return dataNetwork;
+    }
+
+    public void setNFC(boolean val){
+        this.nfc = val;
+    }
+
+    public boolean getNFC(){
+        return nfc;
+    }
+
+    public void setBluetooth(boolean val){
+        this.bluetooth = val;
+    }
+
+    public boolean getBluetooth(){
+        return bluetooth;
     }
 }
